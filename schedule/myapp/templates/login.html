@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    body {
+        background-color: #f8f9fa;
+    }
+
+    .card {
+        box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
+        border-radius: 15px;
+        background-color: #fff;
+    }
+
+    .card-body {
+        padding: 30px;
+    }
+
+    .form-control {
+        border-radius: 10px;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+        border-radius: 10px;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+        border-color: #0056b3;
+    }
+
+    .alert {
+        border-radius: 10px;
+    }
+</style>
+
+<div class="container mt-5">
+    <div class="row justify-content-center" style="margin-top: 20%; margin-left: 15%">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h1 class="mb-4 text-center">Ieiet sistēmā</h1>
+                    <form method="POST" action="{% url 'login' %}">
+                        {% csrf_token %}
+                        <input type="text" name="login" placeholder="r_numurs" class="form-control mb-3">
+                        <input type="password" name="parole" placeholder="Parole" class="form-control mb-3">
+                        <button type="submit" class="btn btn-primary btn-block">Ieiet</button>
+                    </form>
+                    {% if messages %}
+                    <div class="alert alert-danger mt-3" role="alert">
+                        {% for message in messages %}
+                        {{ message }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

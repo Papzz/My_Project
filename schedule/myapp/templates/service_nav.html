@@ -1,0 +1,71 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://use.fontawesome.com/3903c9d7fd.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.2/css/all.css" rel="stylesheet">
+    <title>Vertical Navbar</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .vertical-navbar {
+            border-right: 1px solid #ccc;
+            position: fixed;
+            top: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f8f9fa; /* цвет фона, при необходимости измените под свой дизайн */
+            height: 100vh; /* высота на всю высоту окна */
+            width: 150px; /* ширина боковой панели, при необходимости измените под свой дизайн */
+            overflow: hidden;
+        }
+
+        .vertical-navbar a {
+            font-size: 16px;
+            color: black;
+            text-align: center;
+            padding: 14px 25px;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            transition: all 0.5s ease;
+            width: 100%;
+            box-sizing: border-box;
+            border-bottom: 1px solid #ccc; /* разделитель между пунктами меню */
+        }
+
+        .vertical-navbar a:hover {
+            background: #8CA6DB;
+            color: black;
+            border-radius: 5px;
+        }
+
+        .content {
+            margin-left: 150px; /* учитывайте ширину боковой панели */
+            padding: 16px;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="vertical-navbar">
+        <a href="{% url 'service_base' %}">Pakalpojumi</a>
+        <a href="{% url 'employee_base' %}">Darbinieki</a>
+        <a href="{% url 'prof_base' %}">Amati</a>
+        <a href="https://codepen.io/pec-man">Contact</a>
+    </div>
+
+    <div class="content">
+        <!-- Здесь ваш основной контент -->
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>

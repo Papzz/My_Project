@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+{% include 'navbar.html' %}
+{% block content %}
+<style>
+    .star-rating {
+    font-size: 30px;
+    color: #ddd;
+    cursor: pointer;
+}
+
+.star {
+    display: inline-block;
+    margin-right: 5px;
+}
+
+.selected {
+    color: yellow;
+}
+.text-muted {
+        color: #888;
+    }
+</style>
+
+<h1>Print&Serviss </h1>
+
+<br>
+<strong style="font-size: 25px">{{ pakalpojums.nosaukums }}</strong>
+
+<br><small>Remonta numurs: {{pakalpojums.r_numurs}} </small><br><br>
+
+<strong>Klienta Dati</strong>
+
+<div>
+    <hr>
+    <p>Klients : {{ pakalpojums.klients }}</p>
+    <p>Klienta talrunis : {{ pakalpojums.k_talrunis}} </p>
+    <p>Klienta e-pasts : {{ pakalpojums.k_epasts}}</p>
+    <hr>
+</div>
+<br>
+
+<strong>Pakalpojuma dati</strong>
+<div>
+
+    <hr>
+    <p>Vieta : {{ pakalpojums.vieta }}</p>
+    <p>Datums : {{ pakalpojums.datums|date:"Y-m-d" }} </p>
+    <p>Laiks : {{ pakalpojums.laiks|date:"H:i:s.u" }}</p>
+    <p>Situacijas apraksts: {{ pakalpojums.sit_aprakts }}</p>
+    <hr>
+</div>
+<!-- Добавляем текст "Paraksts" -->
+
+{% if pakalpojums.darb_apraksts != '0' %}
+<div class="card" style="border: none; margin-bottom: 0;">
+    <div class="card-body" style="padding: 0;">
+
+        <label for="ats_apraksts">Pasniegta darba apraksts</label><br>
+        <textarea class="form-control" name="darb_apraksts" id="darb_apraksts" maxlength="150" readonly>{{ pakalpojums.darb_apraksts }}</textarea>
+
+    </div>
+</div>
+{% else %}
+<form method="POST" action="{% url 'save_darb_apraksts' pk=pakalpojums.pk %}">
+    {% csrf_token %}
+    <div>
+        <p class="card-text">Paveikta darba apraksts:</p>
+        <textarea class="form-control" name="darb_apraksts" id="darb_apraksts" maxlength="300"></textarea>
+
+    </div>
+    <div class="btn-container mt-3" style="margin-top: 2%">
+        <button type="submit" class="btn btn-primary">Saglabat</button>
+    </div>
+</form>
+{% endif %}
+{% if pakalpojums.apkalposanas_lim != 0 %}
+<!-- Darb Kval -->
+<label for="darb_kval">Pasniegta darba kvalitāte</label>
+<div id="darb_kval_rating" class="star-rating" data-rating="{{ pakalpojums.darb_kval }}"></div>
+
+<br>
+
+<!-- Dar Atrums -->
+<label for="dar_atrums">Pasniegta darba atrums:</label>
+<div id="dar_atrums_rating" class="star-rating" data-rating="{{ pakalpojums.dar_atrums }}"></div>
+
+<br>
+
+<!-- Apkalpošanas Limits -->
+<label for="apkalposanas_lim">Apkalpošanas limenis:</label>
+<div id="apkalposanas_lim_rating" class="star-rating" data-rating="{{ pakalpojums.apkalposanas_lim }}"></div>
+
+<br>
+
+<!-- Ats Apraksts -->
+<label for="ats_apraksts">Ats Apraksts:</label><br>
+<textarea class="form-control" name="ats_apraksts" id="ats_apraksts" maxlength="150" readonly>{{ pakalpojums.ats_apraksts }}</textarea>
+
+<br>
+<div class="btn-container" style="margin-top: 2%">
+    <a href="{% url 'service_employee' %}" class="btn btn-secondary">Iziet</a>
+</div>
+{% else %}
+{% endif %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        initializeRating('darb_kval_rating', {{ pakalpojums.darb_kval }});
+        initializeRating('dar_atrums_rating', {{ pakalpojums.dar_atrums }});
+        initializeRating('apkalposanas_lim_rating', {{ pakalpojums.apkalposanas_lim }});
+    });
+
+    function initializeRating(ratingId, rating) {
+        const ratingContainer = document.getElementById(ratingId);
+
+        // Инициализация рейтинга
+        for (let i = 1; i <= 10; i++) {
+            const star = document.createElement('span');
+            star.innerHTML = '★';
+            star.className = 'star';
+
+            if (i <= rating) {
+                star.classList.add('selected');
+            }
+
+            ratingContainer.appendChild(star);
+        }
+    }
+</script>
+
+{% endblock %}
+

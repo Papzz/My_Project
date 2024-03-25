@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% block content %}
+{% include 'navbar.html' %}
+<style>
+    .card {
+        margin-bottom: 20px;
+        position: relative;
+    }
+
+    .btn-group {
+        position: absolute;
+        top: 110px;
+        right: 15px;
+        display: flex;
+        gap: 0 px;
+    }
+
+    .btn-group .btn {
+        flex: 1;
+        max-width: 100px;
+    }
+
+    .section-link {
+        color: black;
+        padding: 10px;
+        margin: 5px;
+        border-radius: 5px;
+        text-decoration: none;
+        display: inline-block;
+        transition: background-color 0.3s;
+    }
+
+    .section-link.active {
+        text-decoration: underline;
+        font-weight: bold;
+    }
+
+    .section-link:hover {
+        background-color: #ff6f61;
+        color: white;
+    }
+
+    body {
+        background-color: #f5f5f5;
+    }
+
+    .container {
+        margin-left: 100px;
+    }
+</style>
+
+<div class="container mt-5">
+    <h1 class="mb-4">Darbinieki <a href="{% url 'employee' %}" class="btn btn-primary"><i class="fas fa-plus"></i>
+        Pievienot</a></h1>
+
+    {% regroup all by amata_ID as grouped_items %}
+
+    {% for amata_group in grouped_items %}
+    <p style="margin-left: 10px; margin-top: 5px;font-size: 27px">{{ amata_group.grouper }}</p>
+    {% for item in amata_group.list %}
+    <div class="card mb-4" style="border:solid light gray 0.5px; border-radius: 20px">
+        <div class="card-body">
+            <h5 class="card-title">
+                <a href="{% url 'employee_detail' pk=item.darb_ID %}"
+                   style="text-decoration: none; color: black; font-size: 21px;">
+                    {{ item.vards }} {{ item.uzvards }}
+                    <i class="fas fa-edit fa-xs" style="color: #007bff;"></i>
+                </a>
+            </h5>
+            <p class="card-text" style="font-size: 17px;">{{ item.prasmes }}</p>
+            <p class="card-text" style="font-size: 17px;">Uzsākšanas datums: {{ item.uzsak_datums }}</p>
+
+            <div class="btn-group">
+                <!-- Кнопка "Dzēst" с применением стилей -->
+                <button class="btn btn-danger btn-sm" data-bs-toggle="modal"
+                        data-bs-target="#deleteConfirmation{{ item.darb_ID }}">
+                    Dzēst
+                </button>
+
+                <!-- Модальное окно для подтверждения удаления -->
+                <div class="modal fade" id="deleteConfirmation{{ item.darb_ID }}" tabindex="-1" role="dialog"
+                     aria-labelledby="deleteConfirmationLabel{{ item.darb_ID }}" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="deleteConfirmationLabel{{ item.darb_ID }}">Dzēšanas
+                                    apstiprinājums</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Aizvērt"></button>
+                            </div>
+                            <div class="modal-body">
+                                Vai tiešām vēlaties dzēst darbinieku: {{ item.vards }} {{ item.uzvards }}?
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Atcelt</button>
+                                <form method="POST" action="{% url 'employee_delete' pk=item.darb_ID %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger">Dzēst</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    {% endfor %}
+</div>
+
+{% endblock %}
