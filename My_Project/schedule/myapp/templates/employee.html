@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% block content %}
+{% include 'navbar.html' %}
+<style>
+
+    .btn-group .btn {
+    flex: 1;
+    max-width: 100px;
+    margin-left: -10px;
+}
+
+
+</style>
+<h1 style="margin-left:6.3%"> Darbinieka reģistrēšana</h1>
+
+<form method="POST" action="{% url 'employee' %}">
+
+    {% csrf_token %}
+    <div style="padding: 3%; margin-left: 3.2%; margin-right: 5%">
+        <div class="mb-3 row">
+            <div class="col-md-4">
+                <label for="InputVards" class="form-label">Vards</label>
+                <input type="text" class="form-control" id="InputVards"
+                       placeholder="Piemērs: John" name="vards" value="{{ vards }}" maxlength="15">
+            </div>
+
+            <div class="col-md-4">
+                <label for="InputUzvards" class="form-label">Uzvards</label>
+                <input type="text" class="form-control" id="InputUzvards"
+                       placeholder="Piemērs: Smith" name="uzvards" value="{{ uzvards }}" maxlength="25">
+            </div>
+
+
+        </div>
+        <div class="mb-3 row">
+            <div class="col-md-4">
+                <label for="InputKEpasts" class="form-label">E-pasts</label>
+                <input type="email" class="form-control" id="InputKEpasts"
+                       placeholder="Piemērs: darbinieka@example.com" name="epasts" value="{{ epasts }}" maxlength="50">
+            </div>
+
+            <div class="col-md-4">
+                <label for="InputTalrunis" class="form-label">Talrunis</label>
+                <input type="text" pattern="\d*" class="form-control" id="InputTalrunis"
+                       placeholder="Piemērs: 22222222" name="talrunis"
+                       oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);
+                            if (this.value.length === 1 && this.value[0] === '0') this.value = '';
+                            this.value = this.value.replace(/[^0-9]/g, '');"
+                       value="{{ talrunis }}" maxlength="8">
+            </div>
+
+
+        </div>
+
+        <div class="mb-3 row">
+            <div class="col-md-4">
+                <label for="InputDD" class="form-label">Dzimšanas datums</label>
+                <input type="date" class="form-control" id="InputDD"
+                       placeholder="Ievadiet darbinieka dzimšanas datumu" name="dz_datums" value="{{ dz_datums }}"
+                       max="{{ today }}">
+            </div>
+
+            <div class="col-md-4">
+                <label for="InputUD" class="form-label">Darba uzsakšanas datums</label>
+                <input type="date" class="form-control" id="InputUD"
+                       name="uzsak_datums" value="{{ uzsak_datums }}">
+            </div>
+        </div>
+        <h4>Prasmes</h4>
+        <div>
+            <div class="col-md-4">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="tehnika" name="tehnika">
+                    <label class="form-check-label" for="tehnika">
+                        Prasme veikt ierices remontdarbu
+                    </label>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="montesana" name="montesana">
+                    <label class="form-check-label" for="montesana">
+                        Prasmes veikt jaunu detaļas montešanu
+                    </label>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="programm" name="programm">
+                    <label class="form-check-label" for="programm">
+                        Prasmes uzinstalēt/nokonfigurēt programmatūru
+                    </label>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="tehmont" name="tehmont">
+                    <label class="form-check-label" for="tehmont">
+                        Prasme veikt remontdarbus un jauna detaļas montēšanu
+                    </label>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="vaditajs" name="vaditajs">
+                    <label class="form-check-label" for="vaditajs">
+                        Vaditāja apliecība
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <br>
+        <button type="submit" class="btn btn-primary" style="background-color:#EC4138;border:0.5px solid black">
+            Pievienot
+        </button>
+        <a href="{% url 'employee_base' %}" class="btn btn-secondary">Atgriezties</a>
+    </div>
+</form>
+{% endblock %}
+

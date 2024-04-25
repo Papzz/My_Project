@@ -1,0 +1,275 @@
+{% extends 'base.html' %}
+{% block content %}
+{% include 'navbar.html' %}
+<style>
+    body{
+    overflow: hidden; /* Hide scrollbars */
+    }
+
+    .section-link {
+        color: black;
+        padding: 10px;
+        margin: 5px;
+        border-radius: 5px;
+        text-decoration: none;
+        display: inline-block;
+        transition: background-color 0.3s;
+        border: 1px solid black;
+        border-radius: 50px;
+    }
+
+    .section-link.active {
+
+        font-weight: bold;
+        border: 1px solid black;
+        background-color: #ff6f61;
+        box-shadow: 1px 1px;
+    }
+
+    .card {
+        margin-bottom: 20px;
+        position: relative;
+        border: solid light gray 0.5px;
+        border-radius: 20px;
+
+    }
+
+    .delete-button {
+        position: absolute;
+        top: 0px;
+        right: 8px;
+    }
+
+    .btn-group .btn {
+        flex: 1;
+        max-width: 100px;
+        margin-left: -10px;
+    }
+
+    .section-link:hover {
+        background-color: #ff6f61;
+        color: white;
+        box-shadow: 1px 1px solid black;
+    }
+
+    .btn-group .btn {
+        flex: 1;
+        max-width: 100px;
+        margin-left: -10px;
+    }
+
+    body {
+        background-color: #f5f5f5;
+    }
+
+    .container {
+        margin-left: 5%;
+        max-width: 1200px;
+        width: 100%;
+    }
+    .h6{
+    font-size:0.9vw;
+    }
+
+   #scrollToTopButton {
+    display: none; /* Скрыть кнопку по умолчанию */
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    background-color: #333;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 24px;
+    line-height: 30px;
+    text-align: center;
+    z-index: 9999; /* Поднимаем кнопку наверх поверх других элементов */
+    background-color: #ff6f61;
+    border: 0.5px solid black;
+}
+
+#cards-container {
+    max-height: 80vh;
+    overflow-y: auto;
+    margin-top: 20px;
+
+    scrollbar-color: #555 #f5f5f5;
+    padding-bottom: 120px;
+
+}
+
+
+#cards-container::-webkit-scrollbar {
+    width: 3px;
+    height: 3px;
+
+}
+
+/* Стилизуем трек скроллбара */
+#cards-container::-webkit-scrollbar-track {
+    background: #f5f5f5;
+
+}
+
+/* Стилизуем видимую часть полосы прокрутки */
+#cards-container::-webkit-scrollbar-thumb {
+    background-color: #555;
+    border-radius: 10px;
+    border: 2px solid #f5f5f5;
+
+
+}
+</style>
+
+
+<h1 class="mb-4" style="margin-left:6%; font-size:1.8vw;">Darbinieku uzskaite</h1>
+<a href="{% url 'employee' %}" class="btn btn-primary"
+   style="position :absolute; left:12vh;margin-top: -2vh;width: 25vh;height: 3.7vh;font-size:0.8vw;background-color:#FF6F61;border: 1px solid black;color :black;box-shadow: 1px 1.5px;margin-top: 1vh"><i
+        class="fas fa-plus"></i>Reģistrēt jaunu darbinieku</a>
+<br><br>
+
+<div id="cards-container" style="margin-left: 5%; max-height: 80vh; overflow-y: auto;">
+    {% for item in all %}
+    <button onclick="scrollToTop()" id="scrollToTopButton" title="Наверх">&#9650;</button>
+
+    <div class="card" style="margin-left: 2%;width: 160vh">
+        <div class="card-body d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+                <div style="font-size:0.8vw">
+                    <h5 class="card-title">
+                        <h6 href="{% url 'employee_detail' pk=item.darb_ID %}"
+                            style="font-size:0.9vw" class="card-title mb-0">
+                            <b>{{ item.vards }} {{ item.uzvards }}</b>
+                        </h6>
+                    </h5>
+                    <p class="card-text">Uzsākšanas datums: {{ item.uzsak_datums }}</p>
+                </div>
+
+
+                <div style="margin-left: 28%; position:absolute;font-size:0.9vw">
+                    <h5 class="card-title">
+                        <h6 class="card-title mb-0" style="font-size:0.9vw"><b> {{ item.talrunis }}</b></h6>
+                        <p class="card-text">{{ item.epasts }}</p>
+                    </h5>
+                </div>
+                <div style="margin-left: 44%; position:absolute;font-size:0.5vw">
+                    <h5 class="card-title">
+                        <p></p>
+                        <p class="card-text" style="font-size:0.9vw">prasmes:</p>
+                        <p></p>
+                    </h5>
+                </div>
+                <div style="margin-left: 52%; position:absolute;font-size:0.9vw">
+                    <h6 class="card-title mb-0" style="margin-left:-35%">Remontet</h6>
+                    {% if item.tehnika %}
+                    <i class="fa-solid fa-check" style="color:green"></i>
+                    {% else %}
+                    <i class="fa-solid fa-xmark" style="color:#ff6f61"></i>
+                    {% endif %}
+                </div>
+                <div style="margin-left: 58%; position:absolute;font-size:0.9vw">
+                    <h6 class="card-title mb-0" style="margin-left:-35%">Montet</h6>
+                    {% if item.montesana %}
+                    <i class="fa-solid fa-check" style="color:green"></i>
+                    {% else %}
+                    <i class="fa-solid fa-xmark" style="color:#ff6f61"></i>
+                    {% endif %}
+                </div>
+                <div style="margin-left: 63%; position:absolute;font-size:0.9vw">
+                    <h6 class="card-title mb-0" style="margin-left:-35%">Instalēt</h6>
+                    {% if item.programm %}
+                    <i class="fa-solid fa-check" style="color:green"></i>
+                    {% else %}
+                    <i class="fa-solid fa-xmark" style="color:#ff6f61"></i>
+                    {% endif %}
+                </div>
+                <div style="margin-left: 71%; position:absolute;font-size:0.9vw">
+                    <h6 class="card-title mb-0" style="margin-left:-35%">Remontet un montet</h6>
+                    {% if item.vaditajs %}
+                    <i class="fa-solid fa-check" style="color:green"></i>
+                    {% else %}
+                    <i class="fa-solid fa-xmark" style="color:#ff6f61"></i>
+                    {% endif %}
+                </div>
+                <div style="margin-left: 79%; position:absolute;font-size:0.9vw">
+                    <h6 class="card-title mb-0" style="margin-left:-35%">Vaditajas</h6>
+                    {% if item.tehmont %}
+                    <i class="fa-solid fa-check" style="color:green"></i>
+                    {% else %}
+                    <i class="fa-solid fa-xmark" style="color:#ff6f61"></i>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="btn-group">
+
+                <a href="{% url 'employee_detail' pk=item.darb_ID %}" class="btn btn-primary btn-sm me-2"
+                   style="margin-right:25px;background-color:#ff6f61;border:#ff6f61;margin-right:50px;border: 0.5px solid black">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                </a>
+
+                <!-- Кнопка "Dzēst" с применением стилей -->
+                <button class="btn btn-danger btn-sm delete-button" data-bs-toggle="modal"
+                        data-bs-target="#deleteConfirmation{{ item.darb_ID }}" style="margin-left:0.8vh; border: 0.5px solid black">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+
+                <!-- Модальное окно для подтверждения удаления -->
+                <div class="modal fade" id="deleteConfirmation{{ item.darb_ID }}" tabindex="-1" role="dialog"
+                     aria-labelledby="deleteConfirmationLabel{{ item.darb_ID }}" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="deleteConfirmationLabel{{ item.darb_ID }}">Dzēšanas
+                                    apstiprinājums</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Aizvērt"></button>
+                            </div>
+                            <div class="modal-body">
+                                Vai tiešām vēlaties dzēst darbinieku: {{ item.vards }} {{ item.uzvards }}?
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Atcelt
+                                </button>
+                                <form method="POST" action="{% url 'employee_delete' pk=item.darb_ID %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger" style="background-color:#EC4138; border: 0.5px solid black;margin-left:0.8vh">
+                                        Dzēst
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endfor %}
+
+<script>
+
+
+    document.getElementById("cards-container").addEventListener("scroll", function() {
+    var scrollToTopButton = document.getElementById("scrollToTopButton");
+    if (this.scrollTop > 20) {
+        scrollToTopButton.style.display = "block";
+    } else {
+        scrollToTopButton.style.display = "none";
+    }
+});
+
+function scrollToTop() {
+    var container = document.getElementById("cards-container");
+    var currentPosition = container.scrollTop;
+    if (currentPosition > 0) {
+        window.requestAnimationFrame(function() {
+            scrollToTop(container);
+        });
+        container.scrollTop = currentPosition - currentPosition / 8;
+    }
+}
+</script>
+{% endblock %}

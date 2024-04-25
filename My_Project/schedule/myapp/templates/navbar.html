@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+    <style>
+        {% load static %}
+        body {
+            margin-top: 8%;
+            font-family: 'Lexend Exa', sans-serif;
+            font-size:0.9vw
+        }
+        nav {
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: inline-block;
+            border: 1px solid black;
+            border-radius: 10px;
+            animation: slide-in 1s ease-out;
+            background-color: #ff6f61;
+            box-shadow: 2px 3px;
+
+        }
+        ul {
+            position: relative;
+            display: flex;
+            flex: 1 1 auto;
+            margin: 0;
+            padding: 0 30px;
+            list-style-type: none;
+            li:not(:last-child) {
+                margin-right: 40px;
+            }
+            li {
+                border: 2px solid transparent;
+                border-radius: 5px;
+                padding: 10px;
+                transition: background 0.2s;
+                a {
+                    color: #2375D8;
+                    text-decoration: none;
+                    text-transform: uppercase;
+                    transition: color 0.2s;
+                }
+                ul {
+                    visibility: hidden;
+                    opacity: 0;
+                    position: absolute;
+                    display: block;
+                    margin: 12px -12px;
+                    padding: 0;
+                    background: #FFA91B;
+                    border: 2px solid #F7C833;
+                    border-right: 2px solid #F89329;
+                    border-bottom: 2px solid #F89329;
+                    border-radius: 5px;
+                    transition: opacity 0.2s, visibility 0.2s;
+                    li {
+                        margin: -2px 0 0 -2px;
+                        box-shadow: 3px 5px 2px 0px #EBECF1;
+                        width: calc(100% + 5px);
+                        line-height: 1.7;
+                        a {
+                            color: #2375D8;
+                        }
+                    }
+                }
+                &:hover {
+                    background: #EC4138;
+                    border: 1px solid #F05749;
+                    border-right: 2px solid #E02A21;
+                    border-bottom: 2px solid #E02A21;
+                    a {
+                        color: #F9F8FD;
+                    }
+                    ul {
+                        visibility: visible;
+                        opacity: 1;
+                        box-shadow: 0px 3px 5px 2px #EBECF1;
+                        li {
+                            a {
+                                color: #F9F8FD;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        @keyframes slide-in {
+            0% {
+                top: -50px;
+            }
+            40% {
+                top: 20px;
+            }
+            70% {
+                top: 10px;
+            }
+            100% {
+                top: 15px;
+            }
+        }
+        .confirmation-popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px;
+            background-color: white;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+    div.logo {
+  position: absolute;
+  top: -110px;
+  left: 85px;
+
+  height: 6.5vh;
+
+
+}
+        @media screen and (max-width: 768px) {
+            .logo {
+                display: none; /* Скрыть логотип на маленьких экранах */
+            }
+        }
+.konts{
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: inline-block;
+            border: 1px solid black;
+            border-radius: 15px;
+            animation: slide-in 1s ease-out;
+
+
+        }
+    </style>
+</head>
+<body>
+
+<div style="width:10%; background-color:#ff6f61">
+    <div class="logo" style="background-color:#ff6f61">
+        <img src="{% static 'logo_print__serviss_sia-removebg-preview.png' %}" alt="Logo"
+             style="position: absolute; left: 5%;">
+    </div>
+    <nav style="text-align: center;position:absolute;font-size:0.9vw; width:57vh; height: 5vh">
+
+        <ul style="position: margin-left: 25%;font-size:0.9vw">
+            <li><a href="{% url 'service_base' %}" style="color: black; text-decoration: bold;font-size:0.9vw">Pakalpojumi</a>
+            </li>
+            <li><a href="{% url 'employee_base' %}" style="color: black; text-decoration: bold;">Darbinieki</a></li>
+            <li>
+                <a href="#0 " style="color: black">Datu bāze <i class="fa-solid fa-angle-down"></i></a>
+                <ul>
+                    <li><a href="#">Eksportēt </a></li>
+                    <li><a href="#">Importēt</a></li>
+                </ul>
+            </li>
+
+        </ul>
+    </nav>
+    <div class="konts"
+         style="position:absolute; margin-left:34%; width:16%;height: 5%;;font-size:0.9vw; border: 1px solid black; background-color:none; border: none;">
+        <ul>
+            <li>
+                <a href="#0" style="color: black;font-size:0.9vw">{{ request.session.login_vards }}
+                    {{ request.session.login_uzvards }}
+                    <i class="fa-solid fa-angle-down"></i></a>
+                <ul>
+                    <li><a href="#" data-bs-toggle="modal" data-bs-target="#changePasswordModal">Nomainīt Paroli</a>
+                    </li>
+                    <li><a href="#" data-bs-toggle="modal" data-bs-target="#logoutConfirmationModal">Izrakstīties</a>
+                    </li>
+                </ul>
+            </li>
+
+        </ul>
+    </div>
+
+</div>
+
+<!-- Nomainīt Paroli Modal -->
+<div class="modal fade" id="changePasswordModal" tabindex="-1" role="dialog" aria-labelledby="changePasswordModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="changePasswordModalLabel">Nomainīt Paroli</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="changePasswordForm" method="post" action="{% url 'change_password' %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="old_password" class="form-label">Vecā parole</label>
+                        <input type="password" class="form-control" id="old_password" name="old_password">
+                    </div>
+                    <div class="mb-3">
+                        <label for="newPassword" class="form-label">Jaunā parole</label>
+                        <input type="password" class="form-control" id="newPassword" name="new_password">
+                    </div>
+                    <div class="mb-3">
+                        <label for="confirmNewPassword" class="form-label">Apstipriniet jauno paroli</label>
+                        <input type="password" class="form-control" id="confirmNewPassword" name="confirm_new_password">
+                    </div>
+                    <button type="submit" class="btn btn-primary"
+                            style="background-color:#EC4138; border:0px solid black">Mainīt Paroli
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Iziet no Konta Confirmation Modal -->
+<div class="modal fade" id="logoutConfirmationModal" tabindex="-1" role="dialog"
+     aria-labelledby="logoutConfirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="logoutConfirmationModalLabel">Izrakstīties</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Aizvērt"></button>
+            </div>
+            <div class="modal-body">
+                <p>Vai tiešām vēlaties iziet no konta?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Atcelt</button>
+                <a href="{% url 'logout' %}" class="btn btn-danger" style="background-color:#EC4138">Apstiprināt</a>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.getElementById('changePasswordForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+      var form = this;
+      var formData = new FormData(form);
+      fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'X-CSRFToken': '{{ csrf_token }}'
+        }
+      })
+      .then(function(response) {
+        if (response.ok) {
+          // Password changed successfully, close the modal
+          $('#changePasswordModal').modal('hide');
+          location.reload();
+        } else {
+          // Password change failed, handle the error
+          console.error('Failed to change password');
+        }
+      })
+      .catch(function(error) {
+        console.error('Error:', error);
+      });
+       .finally(function() {
+        // Обновляем страницу после выполнения запроса
+        location.reload();
+    });
+</script>
+
+</body>
+</html>

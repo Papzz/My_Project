@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<style>
+    body {
+        background-color: #f8f9fa;
+    }
+
+    .card {
+        box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
+        border-radius: 15px;
+        background-color: #fff;
+    }
+
+    .card-body {
+        padding: 30px;
+    }
+
+    .form-control {
+        border-radius: 10px;
+    }
+    
+    .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+        border-radius: 10px;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+        border-color: #0056b3;
+    }
+
+    .alert {
+        border-radius: 10px;
+    }
+        hr {
+        position: absolute;
+        left: 10%;
+        margin-top: 50px;
+        width: 301
+    }
+        .logo-img {
+        height: auto;
+        max-width: 80%; /* Максимальная ширина изображения - 80% от ширины родительского элемента */
+        position: fixed;
+        left: 50%; /* Центрируем изображение по горизонтали */
+        transform: translateX(-50%); /* Центрируем изображение по горизонтали */
+        top: -7%;
+    }
+
+</style>
+<img src="{% static 'logo_print__serviss_sia-removebg-preview.png' %}" alt="Logo" class="logo-img">
+<div class="container mt-5" style="margin-left:8%">
+    <div class="row justify-content-center" style="margin-top: 20%; margin-left: 15%">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h1 class="mb-4 text-center">Ieiet pārvaldīšanas sistēma</h1>
+                    <h6>menedzeris : men men | darbinieks: darb darb</h6>
+                    <form method="POST" action="{% url 'login' %}">
+                        {% csrf_token %}
+                        <input type="text" name="login" placeholder="lietotāja vards" class="form-control mb-3">
+                        <input type="password" name="parole" placeholder="Parole" class="form-control mb-3">
+                        <button type="submit" class="btn btn-primary btn-block">Ienākt</button>
+                    </form>
+
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+{% endblock %}
+{% block footer %}
+<div>
+<footer class="footer mt-5">
+    <div style=" margin-top:10%; margin-left: 23%">
+        <div class="container">
+
+            <span class="text-muted">Pārvaldīšanas sistēma - vietne, kurai piekļuve ir uzņemumam "Print%Servise". Mājaslapa nodrošina darbu datiem e-vidē. </span>
+            <br>
+            <span class="text-muted" style="margin-left: 11%">Mājaslapu izstradaja students Oskars Loguncovs. Prakses vieta "Print&Serviss".</span>
+            <br>
+            <span class="text-muted" style="margin-left: 7%">Kontakt informācija: talrunis: +37125414271 || e-pasts: oskars.loguncovs@rezeknetehnikums.lv</span>
+        </div>
+    </div>
+</footer>
+
+{% endblock %}

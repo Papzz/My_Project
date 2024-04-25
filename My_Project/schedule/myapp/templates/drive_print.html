@@ -1,0 +1,212 @@
+{% extends 'base.html' %}
+{% include 'navbar.html' %}
+{% load static %}
+{% block content %}
+<style>
+    @media print {
+        body {
+            margin: 0;
+            padding: 0;
+            size: A4 portrait;
+        }
+
+        .print-container {
+            width: 100%;
+            max-width: 100%;
+            margin: 0;
+        }
+
+        .btn {
+        display: none !important; /* Скрываем все кнопки с классом .btn */
+            }
+        #darb_AprakstsField{
+        display: block !important; /* Скрываем все кнопки с классом .btn */
+        }
+
+    }
+
+
+}
+
+/* Стили для текста "Paraksts" */
+#signature {
+    position: fixed;
+    bottom: 20px;
+    right: 50px;
+    font-size: 16px;
+    color: black;
+}
+
+    #signatures {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    #employee_signature, #client_signature {
+        flex: 1;
+        text-align: center;
+    }
+/* Стили для поля подписи */
+#signature-field {
+    position: fixed;
+    bottom: 0;
+    right: 20px;
+    width: 200px;
+    height: 50px;
+
+}
+
+
+    h1{
+    text-align: center
+    }
+div.logo {
+  position: absolute;
+  top: -8%;
+  left: 50%;
+
+  height: 6.5vh;
+  transform: translateX(-50%);
+  }
+
+  .container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.table {
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+.table table {
+    width: 100%;
+}
+
+.table caption {
+    font-weight: bold;
+    font-size: 18px;
+    caption-side: top;
+    text-align: center; /* Выравниваем заголовок по центру */
+
+
+}
+
+.table td {
+    padding: 8px;
+    border-bottom: 1px solid #ccc;
+}
+
+.table td:first-child {
+    font-weight: bold;
+    width: 40%;
+}
+
+.table td:last-child {
+    text-align: right;
+}
+
+</style>
+<br>
+
+<div class="logo" style="">
+    <img src="{% static 'logo_print__serviss_sia-removebg-preview.png' %}" alt="Logo">
+</div>
+<div style="padding: 3%; margin-left: 3.2%; margin-right: 5%">
+
+    <br>
+    <p style="font-size: 25px;margin-top: 75px;text-align:center"><b>Izbraukuma darba dokuments</b></p>
+    <p style="font-size: 25px;text-align:center"><b>{{ pakalpojums.nosaukums }}</b></p>
+
+    <p style="text-align:center">Remonta numurs: {{pakalpojums.r_numurs}} </p><br>
+
+
+    <div class="table">
+        <table>
+            <caption>Klienta dati</caption> <!-- Перенесли заголовок сюда -->
+            <tr>
+                <td>Pasutītājs :</td>
+                <td>{{ pakalpojums.klients }}</td>
+
+            </tr>
+            <tr>
+                <td>Pasutītāja talrunis :</td>
+                <td>{{ pakalpojums.k_talrunis}}</td>
+            </tr>
+            <tr>
+                <td>Pakalpojuma sniegšanas adrese :</td>
+                <td>{{ pakalpojums.vieta }}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="table">
+        <table>
+            <caption>Pakalpojuma dati</caption> <!-- Перенесли заголовок сюда -->
+            <tr>
+                <td>Pakalpojuma datums :</td>
+                <td>{{ pakalpojums.datums|date:"d-m-Y" }}</td>
+            </tr>
+            <tr>
+                <td>Pakalpojuma Laiks :</td>
+                <td>{{ pakalpojums.laiks|date:"H:i" }}</td>
+            </tr>
+
+        </table>
+    </div>
+    <div class="mb-3 row" style="text-align:center;">
+        <div class="col-md-4" id="serijasNumursField" style="width: 33%">
+            <label for="InputSerNr" class="form-label"><b>Automašinas numurs</b></label>
+            <input type="text" class="form-control" id="InputSerNr" readonly>
+        </div>
+        <div class="col-md-4" id="NobraukumsField" style="width: 33%">
+            <label for="NobraukumsField" class="form-label"><b>Nobraukums</b></label>
+            <label for="InputNobraukums"></label>
+            <input type="text" class="form-control" id="InputNobraukums" readonly>
+        </div>
+        <div class="col-md-4" id="pakalpojumaTipsField" style="width: 33%">
+            <label for="InputP_laiks" class="form-label"><b>Darba laiks</b></label>
+            <input type="text" class="form-control" id="InputP_laiks" readonly>
+        </div>
+    </div>
+    <div class="mb-3" id="darb_AprakstsField" style="display: none">
+        <label for="InputSitAprakts" class="form-label"><b>Darba apraksts</b></label>
+        <textarea class="form-control" id="InputSitAprakts" rows="2" cols="50" name="komplektacija"
+                  maxlength="300"></textarea>
+    </div>
+    <!-- Добавляем текст "Paraksts" -->
+
+    <div id="signatures">
+        <div id="employee_signature" style="display: none;">
+            <p>Darbinieka paraksts</p>
+            <p style="margin-top: -5px;">__________________</p>
+        </div>
+
+        <div id="client_signature" style="display: none;">
+            <p>Pasutītaja paraksts</p>
+            <p style="margin-top: -5px;">__________________</p>
+        </div>
+    </div>
+
+
+    <!-- Добавляем поле для подписи -->
+    <div id="signature-field"></div>
+    <!-- Добавление кнопок "Izdrukat" и "Iziet" -->
+    <div class="btn-container" style="text-align: center">
+        <a href="{% url 'drive_print' pk=pakalpojums.pk %}" class="btn btn-primary" onclick="printPage()"
+           style="background-color: #ff6f61; border: 1px solid black;">Izdrukat</a>
+        <a href="{% url 'service_employee' %}" class="btn btn-secondary">Iziet</a>
+    </div>
+</div>
+<script>
+    function printPage() {
+    document.getElementById('employee_signature').style.display = 'block';
+    document.getElementById('client_signature').style.display = 'block';
+    window.print();
+}
+</script>
+
+{% endblock %}

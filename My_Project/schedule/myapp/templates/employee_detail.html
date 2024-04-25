@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% block content %}
+{% include 'navbar.html' %}
+<h1 style="margin-left:6.3%">Darbinieka rediģēšana</h1>
+
+<form method="POST" action="{% url 'save_employee' pk=employee.darb_ID %}?next={% url 'employee_base' %}">
+
+
+    {% csrf_token %}
+    <div style="padding: 3%; margin-left: 3.2%; margin-right: 5%">
+        <div class="mb-3 row">
+            <div class="col-md-4">
+                <label for="InputVards" class="form-label">Vards</label>
+                <input type="text" class="form-control" id="InputVards"
+                       placeholder="Piemērs: John" name="vards" value="{{ employee.vards }}" maxlength="15">
+            </div>
+
+            <div class="col-md-4">
+                <label for="InputUzvards" class="form-label">Uzvards</label>
+                <input type="text" class="form-control" id="InputUzvards"
+                       placeholder="Piemērs: Smith" name="uzvards" value="{{ employee.uzvards }}" maxlength="25">
+            </div>
+
+
+        </div>
+        <div class="mb-3 row">
+            <div class="col-md-4">
+                <label for="InputKEpasts" class="form-label">E-pasts</label>
+                <input type="email" class="form-control" id="InputKEpasts"
+                       placeholder="Piemērs: darbinieka@example.com" name="epasts" value="{{ employee.epasts }}" maxlength="50">
+            </div>
+
+            <div class="col-md-4">
+                <label for="InputTalrunis" class="form-label">Talrunis</label>
+                <input type="text" pattern="\d*" class="form-control" id="InputTalrunis"
+                       placeholder="Piemērs: 22222222" name="talrunis"
+                       oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);
+                            if (this.value.length === 1 && this.value[0] === '0') this.value = '';
+                            this.value = this.value.replace(/[^0-9]/g, '');"
+                       value="{{ employee.talrunis }}" maxlength="8">
+            </div>
+
+
+        </div>
+
+        <div class="mb-3 row">
+            <div class="col-md-4">
+                <label for="InputDD" class="form-label">Dzimšanas datums</label>
+                <input type="date" class="form-control" id="InputDD"
+                       placeholder="Ievadiet darbinieka dzimšanas datumu" name="dz_datums" value="{{ employee.dz_datums|date:'Y-m-d'  }}" max="{{ today }}">
+            </div>
+
+            <div class="col-md-4">
+                <label for="InputUD" class="form-label">Darba uzsakšanas datums</label>
+                <input type="date" class="form-control" id="InputUD"
+                       name="uzsak_datums" value="{{ employee.uzsak_datums|date:'Y-m-d'  }}">
+            </div>
+        </div>
+
+        <h4>Prasmes</h4>
+        <div>
+            <div class="col-md-4">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="tehnika" name="tehnika" {% if employee.tehnika %} checked {% endif %}>
+                    <label class="form-check-label" for="tehnika">
+                        Prasme veikt ierices remontdarbu
+                    </label>
+                </div>
+             </div>
+
+            <div class="col-md-4">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="montesana" name="montesana" {% if employee.montesana %} checked {% endif %}>
+                    <label class="form-check-label" for="montesana">
+                        Prasmes veikt jaunu detaļas montešanu
+                    </label>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="programm" name="programm" {% if employee.programm %} checked {% endif %}>
+                    <label class="form-check-label" for="programm">
+                        Prasmes uzinstalēt/nokonfigurēt programmatūru
+                    </label>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="tehmont" name="tehmont" {% if employee.tehmont %} checked {% endif %}>
+                    <label class="form-check-label" for="tehmont">
+                        Vaditāja apliecība
+                    </label>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="vaditajs" name="vaditajs" {% if employee.vaditajs %} checked {% endif %}>
+                    <label class="form-check-label" for="vaditajs">
+                        Prasme veikt remontdarbus un jauna detaļas montēšanu
+                    </label>
+                </div>
+            </div>
+
+
+        </div>
+
+
+    <br>
+            <div class="mb-3">
+                <button type="submit" class="btn btn-primary" style="background-color:#EC4138; border: 1px solid black">Saglabāt</button>
+                <a href="{% url 'employee_base' %}" class="btn btn-secondary">Atcelt</a>
+            </div>
+        </ul>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.querySelector('form');
+            if (form) {
+                form.addEventListener('submit', function () {
+                    window.location.href = "{% url 'employee_base' %}";
+                });
+            }
+        });
+    </script>
+
+</form>
+{% endblock %}

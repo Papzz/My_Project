@@ -1,0 +1,355 @@
+{% extends 'base.html' %}
+{% include 'navbar.html' %}
+{% block content %}
+<style>
+    body {
+
+    }
+    /* Стили для таблиц */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+
+    th, td {
+        padding: 8px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+
+    th {
+        background-color: #f2f2f2;
+    }
+
+    tr:hover {
+        background-color: #f5f5f5;
+    }
+
+    /* Стили для карточки */
+    .card {
+        margin-bottom: 20px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    }
+
+    .card-body {
+        padding: 20px;
+    }
+
+    .card-title {
+        font-size: 20px;
+        margin-bottom: 10px;
+    }
+
+    .btn-container {
+        margin-top: 20px;
+    }
+
+    #scrollToTopButton {
+    display: none; /* Скрыть кнопку по умолчанию */
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    background-color: #333;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 24px;
+    line-height: 30px;
+    text-align: center;
+    z-index: 9999; /* Поднимаем кнопку наверх поверх других элементов */
+    background-color: #ff6f61;
+    border: 0.5px solid black;
+}
+
+#cards-container {
+    max-height: 80vh;
+    overflow-y: auto;
+    margin-top: 20px;
+
+    scrollbar-color: #555 #f5f5f5;
+    padding-bottom: 120px;
+
+}
+
+
+#cards-container::-webkit-scrollbar {
+    width: 3px;
+    height: 3px;
+
+}
+
+/* Стилизуем трек скроллбара */
+#cards-container::-webkit-scrollbar-track {
+    background: #f5f5f5;
+
+}
+
+/* Стилизуем видимую часть полосы прокрутки */
+#cards-container::-webkit-scrollbar-thumb {
+    background-color: #555;
+    border-radius: 10px;
+    border: 2px solid #f5f5f5;
+
+
+}
+</style>
+{% if not pakalpojums.paktip_ID.nosaukums == "Izbraukums pie klienta" %}
+
+    <div style="padding: 3%; margin-left: 3.2%; margin-right: 5%">
+        <p style="font-size: 25px;text-align:center"><b>{{ pakalpojums.nosaukums }}</b></p>
+        <p style="text-align:center">Remonta numurs: {{pakalpojums.r_numurs}} </p><br>
+
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">Situacijas apraksts</h4>
+                <table>
+                    <tr>
+                        <td>{{ pakalpojums.sit_aprakts }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+
+        {% if not pakalpojums.status %}
+
+        <div class="card">
+            <div class="card-body">
+                <form id="darbAprakstsForm" action="{% url 'save_darb_apraksts' pk=pakalpojums.pk %}" method="POST" onsubmit="submitForm()">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="darb_apraksts">Paveikta darba apraksts:</label>
+                        <textarea class="form-control" name="darb_apraksts" id="darb_apraksts" maxlength="300"></textarea>
+                    </div>
+                    <div class="btn-container">
+                        <button type="submit" id="submitBtn" class="btn btn-primary" style="background-color: #ff6f61; border: 1px solid black;">Pievienot</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+
+        {% regroup pakalpojums.pakinfo_set.all|dictsortreversed:"datums" by datums|date:"M.d (Y)" as grouped_items %}
+        {% for date_group in grouped_items %}
+        {% if not pakalpojums.status %}
+    <div id="cards-container" style="margin-left: 2%; max-height: 25vh; overflow-y: auto;">
+        {% else %}
+        <div id="cards-container" style="margin-left: 2%; max-height: 50vh; overflow-y: auto;">
+            {% endif %}
+        <button onclick="scrollToTop()" id="scrollToTopButton" title="Наверх">&#9650;</button>
+
+            <p style="margin-left: 2%; margin-top: 5px;font-size: 2.3vh">{{ date_group.grouper }}</p>
+            {% for item in date_group.list %}
+
+        <div class="card" style="width:98%">
+            <div class="card-body">
+                <p>{{ item.darb_apraksts }}</p>
+            </div>
+        </div>
+
+        {% endfor %}
+
+        {% endfor %}
+    {% endif %}
+    </div>
+        <div class="btn-container">
+            {% if not pakalpojums.status %}
+            <button type="submit" id="completeBtn" class="btn btn-primary" style="background-color: #ff6f61; border: 1px solid black;">Pabeigt</button>
+            {% endif %}
+    {% if not request.session.menedzeris|default:"" %}
+        <a href="{% url 'service_employee' %}" class="btn btn-secondary">Atcelt</a>
+    {% else %}
+        <a href="{% url 'service_base' %}" class="btn btn-secondary">Atcelt</a>
+    {% endif %}
+        </div>
+
+{% else %}
+
+<div style="padding:3%;margin-left: 3.2%; margin-right: 5%">
+    <p style="font-size: 25px;text-align:center"><b>{{ pakalpojums.nosaukums }}</b></p>
+    <p style="text-align:center">Remonta numurs: {{pakalpojums.r_numurs}} </p><br>
+
+    <div class="table">
+        <table>
+            <tr>
+                <td>Situacijas apraksts:</td>
+                <td>{{ pakalpojums.sit_aprakts }}</td>
+            </tr>
+        </table>
+        <br>
+    </div>
+
+    <form id="izbraukumsForm" method="POST" action="{% url 'izbraukums' %}">
+        {% csrf_token %}
+        <div class="mb-3 row" style="text-align:center;">
+            <div class="col-md-4" id="serijasNumursField" style="width: 33%">
+                <label for="InputSerNr" class="form-label"><b>Automašinas numurs</b></label>
+                <input type="text" class="form-control" id="InputSerNr" maxlength="7" name="auto" value="{{ auto }}">
+            </div>
+            <div class="col-md-4" id="NobraukumsField" style="width: 33%">
+                <label for="NobraukumsField" class="form-label"><b>Nobraukums</b></label>
+                <input type="text" class="form-control" id="InputNobraukums" maxlength="10" name="nobraukums" value="{{ nobraukums }}">
+            </div>
+            <div class="col-md-4" id="pakalpojumaTipsField" style="width: 33%">
+                <label for="InputP_laiks" class="form-label"><b>Darba laiks</b></label>
+                <input type="time" class="form-control" id="InputP_laiks" name="p_laiks" value="{{ p_laiks }}">
+            </div>
+        </div>
+        <br>
+        <div class="mb-3" id="darb_AprakstsField" style="">
+            <label for="InputSitAprakts" class="form-label"><b>Darba apraksts</b></label>
+            <textarea class="form-control" id="InputSitAprakts" rows="2" cols="50" name="darb_apraksts" maxlength="300">{{ darb_apraksts }}</textarea>
+        </div>
+        <div class="btn-container">
+            <button type="submit" id="Saglabat" class="btn btn-primary" style="background-color: #ff6f61; border: 1px solid black;">Saglabat</button>
+            <a href="{% if not request.session.menedzeris|default:"" %}{% url 'service_employee' %}{% else %}{% url 'service_base' %}{% endif %}" class="btn btn-secondary">Atcelt</a>
+        </div>
+    </form>
+</div>
+
+{% endif %}
+
+<script>
+        document.addEventListener("DOMContentLoaded", function() {
+        // Обработка нажатия на кнопку "Pievienot"
+        document.getElementById("submitBtn").addEventListener("click", function(event) {
+            event.preventDefault();
+            location.reload();
+            var text = document.getElementById("darb_apraksts").value;
+            if (!text.trim()) {
+                alert("Lūdzu, ievadiet tekstu pirms pievienošanas.");
+                location.reload();
+            } else {
+                saveText(text);
+                location.reload();
+
+            }
+        });
+
+        // Обработка нажатия на кнопку "Pabeigt"
+        document.getElementById("completeBtn").addEventListener("click", function() {
+            var text = document.getElementById("darb_apraksts").value;
+            saveCompleted(text);
+        });
+
+        // Функция сохранения текста
+        function saveText(text) {
+            var formData = new FormData();
+            formData.append("darb_apraksts", text);
+
+            fetch("{% url 'save_darb_apraksts' pk=pakalpojums.pk %}", {
+                method: "POST",
+                body: formData,
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}"
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Очистка поля ввода
+                    document.getElementById("darb_apraksts").value = "";
+                    // Добавление нового элемента в раздел с карточками
+                    addNewCard(text);
+                } else {
+                    console.error("Server responded with an error:", response.statusText);
+                }
+            })
+            .catch(error => console.error("Error:", error));
+
+        }
+
+        // Функция добавления новой карточки
+        function addNewCard(text) {
+            var cardsContainer = document.getElementById("cards-container");
+            var newCard = document.createElement("div");
+            newCard.className = "card";
+            newCard.style.width = "98%";
+            newCard.innerHTML = '<div class="card-body"><p>' + text + '</p></div>';
+            cardsContainer.prepend(newCard);
+        }
+
+        // Функция сохранения завершенного текста
+        function saveCompleted(text) {
+            var formData = new FormData();
+            formData.append("darb_apraksts", text);
+
+            fetch("{% url 'save_completed' pk=pakalpojums.pk %}", {
+                method: "POST",
+                body: formData,
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}"
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Перенаправляем пользователя на страницу service_employee
+                    window.location.href = "{% url 'service_employee' %}";
+                } else {
+                    console.error("Server responded with an error:", response.statusText);
+                }
+            })
+            .catch(error => console.error("Error:", error));
+        }
+    });
+
+    document.getElementById("cards-container").addEventListener("scroll", function() {
+        var scrollToTopButton = document.getElementById("scrollToTopButton");
+        if (this.scrollTop > 20) {
+            scrollToTopButton.style.display = "block";
+        } else {
+            scrollToTopButton.style.display = "none";
+        }
+    });
+
+    function scrollToTop() {
+        var container = document.getElementById("cards-container");
+        var currentPosition = container.scrollTop;
+        if (currentPosition > 0) {
+            window.requestAnimationFrame(function() {
+                scrollToTop(container);
+            });
+            container.scrollTop = currentPosition - currentPosition / 8;
+        }
+    }
+
+     document.addEventListener("DOMContentLoaded", function() {
+        document.getElementById("Saglabat").addEventListener("click", function(event) {
+            event.preventDefault();
+            var auto = document.getElementById("InputSerNr").value;
+            var nobraukums = document.getElementById("InputNobraukums").value;
+            var p_laiks = document.getElementById("InputP_laiks").value;
+            var darb_apraksts = document.getElementById("InputSitAprakts").value;
+
+            var formData = new FormData();
+            formData.append("auto", auto);
+            formData.append("nobraukums", nobraukums);
+            formData.append("p_laiks", p_laiks);
+            formData.append("darb_apraksts", darb_apraksts);
+
+            fetch("{% url 'izbraukums' %}", {
+                method: "POST",
+                body: formData,
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}"
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Действия после успешного сохранения данных
+                    window.location.href = "{% url 'service_employee' %}";
+                } else {
+                    console.error("Server responded with an error:", response.statusText);
+                }
+            })
+            .catch(error => console.error("Error:", error));
+        });
+    });
+</script>
+
+{% endblock %}

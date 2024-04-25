@@ -1,0 +1,355 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+{% include 'navbar_employee.html' %}
+
+<style>
+    body{
+        overflow: hidden; /* Hide scrollbars */
+    }
+
+    .section-link {
+        color: black;
+        padding: 10px;
+        margin: 5px;
+        border-radius: 5px;
+        text-decoration: none;
+        display: inline-block;
+        transition: background-color 0.3s;
+        border: 1px solid black;
+        border-radius: 50px;
+    }
+
+    .section-link.active {
+
+        font-weight: bold;
+        border: 1px solid black;
+        background-color: #ff6f61;
+        box-shadow: 1px 1px;
+    }
+
+    .card {
+        margin-bottom: 20px;
+        position: relative;
+        border: solid light gray 0.5px;
+        border-radius: 5px;
+
+    }
+
+    .delete-button {
+        position: absolute;
+        top: 0px;
+        right: 8px;
+    }
+
+    .btn-group {
+        position: absolute;
+        right: 5px;
+        display: flex;
+        gap: 0 px;
+        width:5vh;
+
+    }
+
+    .btn-group .btn {
+        flex: 1;
+        max-width: 100px;
+        margin-left: -10px;
+    }
+
+    .section-link:hover {
+        background-color: #ff6f61;
+        color: white;
+        box-shadow: 1px 1px solid black;
+    }
+
+
+
+    body {
+        background-color: #f5f5f5;
+    }
+
+.container {
+    margin-left: 5%;
+    max-width: 1200px;
+    width: 100%;
+    position: relative; /* Добавлено */
+}
+    .h6{
+    font-size:0.9vw;
+    }
+    #scrollToTopButton {
+    display: none; /* Скрыть кнопку по умолчанию */
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    background-color: #333;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 24px;
+    line-height: 30px;
+    text-align: center;
+    z-index: 9999; /* Поднимаем кнопку наверх поверх других элементов */
+    background-color: #ff6f61;
+    border: 0.5px solid black;
+}
+
+#cards-container {
+    max-height: 80vh;
+    overflow-y: auto;
+    margin-top: 20px;
+
+    scrollbar-color: #555 #f5f5f5;
+    padding-bottom: 120px;
+
+}
+
+
+#cards-container::-webkit-scrollbar {
+    width: 3px;
+    height: 3px;
+
+}
+
+/* Стилизуем трек скроллбара */
+#cards-container::-webkit-scrollbar-track {
+    background: #f5f5f5;
+
+}
+
+/* Стилизуем видимую часть полосы прокрутки */
+#cards-container::-webkit-scrollbar-thumb {
+    background-color: #555;
+    border-radius: 10px;
+    border: 2px solid #f5f5f5;
+
+
+}
+</style>
+
+
+    <h1 class="mb-4" style="font-size:1.8vw;margin-left:6%">Reģistrēto pakalpojumu saraksts</h1>
+    <div style="margin-left: 50%;transform: translateX(-30%);">
+    <a href="{% url 'service_employee_status' status='visi' %}"
+       class="section-link {% if status == 'visi' %}active{% endif %}">Visi</a>
+    <a href="{% url 'service_employee_status' status='drizuma' %}"
+       class="section-link {% if status == 'drizuma' %}active{% endif %}">Ieplanoti</a>
+    <a href="{% url 'service_employee_status' status='uzsaktie' %}"
+       class="section-link {% if status == 'uzsaktie' %}active{% endif %}">Procesa</a>
+    <a href="{% url 'service_employee_status' status='nokaveti' %}"
+       class="section-link {% if status == 'nokaveti' %}active{% endif %}">Nokavēti</a>
+    <a href="{% url 'service_employee_status' status='pabeigti' %}"
+       class="section-link {% if status == 'pabeigti' %}active{% endif %}">Pabeigti</a>
+    </div>
+     <div class="col-md-4" >
+                <form action="{% url 'service_employee_status' status=status %}" method="GET">
+
+                <div class="input-group" style="position:absolute; left:135.4vh; margin-top:-5vh; width:17.5%">
+                    <input type="text" class="form-control" id="searchInput" placeholder="Remonta numurs" name="search_query" value="{{ request.GET.search_query }}" style="border-radius:15px;font-size:.9vw;width:2vw;height:4vh">
+                    {% if request.GET.search_query %}
+                <a href="{% url 'service_employee_status' status='visi' %}" class="btn btn-outline-secondary" style="background-color:#dc3545; color: black; border-radius:5px;">
+                    <i class="fas fa-times"></i>
+                </a>
+                    {% else %}
+                    <button class="btn btn-outline-secondary" type="submit" style="background-color:#ff6f61; color: black; border-radius:5px; margin-left:5px;width:2vw;height:4vh ;background-color:#dc3545; border: 0.5px solid black;box-shadow: 1.5px 1.5px;"><i class="fa-solid fa-magnifying-glass" style="position:center;font-size: 1.5vh;margin-left:-.1vh;"></i></button>
+                    {% endif %}
+                </div>
+            </form>
+            </div>
+
+
+    {% regroup employee_services|dictsortreversed:"datums" by datums|date:"M.d (Y)" as grouped_items %}
+
+    <div id="dateGroupDiv">
+        <div id="cards-container" style="margin-left: 5%; max-height: 80vh; overflow-y: auto;">
+    {% for date_group in grouped_items %}
+    <p style="margin-left: 10px; margin-top: 5px;font-size: 2.3vh">{{ date_group.grouper }}</p>
+    {% for item in date_group.list %}
+
+     <button onclick="scrollToTop()" id="scrollToTopButton" title="Наверх">&#9650;</button>
+    {% if forloop.parentloop.first and forloop.first %}
+
+    {% endif %}
+            <div class="card" style="margin-left: 2%;width: 160vh">
+            <div class="card-body d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <div>
+                        {% if item.nosaukums|length > 30 %}
+                            <h6 style="text-decoration: none; color: black; font-size:0.9vw"><b>{{ item.nosaukums|slice:":30" }}-</b></h6>
+                            <h6 style="text-decoration: none; color: black; font-size:0.9vw;"><b>{{ item.nosaukums|slice:"30:" }}</b></h6>
+                        {% else %}
+                            <h6 style="text-decoration: none; color: black; font-size:0.9vw;"><b>{{ item.nosaukums }}</b></h6>
+                        {% endif %}
+                        <p class="card-text mb-0" style="font-size:0.9vw">Numurs: {{ item.r_numurs }}</p>
+                    </div>
+
+                    <div style="margin-left: 23%; position:absolute;font-size:0.9vw">
+                        <h6 class="card-title mb-0"><b>{{ item.klients }}</b></h6>
+                        <p class="card-text mb-0">{{ item.k_talrunis }}</p>
+                    </div>
+
+                    <div style="margin-left: 38%; position:absolute">
+                        <h6 class="card-title mb-0"><b>{{ item.darb_ID }}</b></h6>
+                        <p class="card-text mb-0">{{ item.paktip_ID }}</p>
+                    </div>
+
+                    <div style="margin-left: 60%; position:absolute">
+
+                       {% if not item.vieta %}
+
+                        <p></p>
+                        <p><b>Dārzu iela 28</b></p>
+                        <p></p>
+                        {% else %}
+                        <h6 class="card-title mb-0" style="font-size:0.9vw"><b>{{ item.vieta }}</b></h6>
+                        <p class="card-text mb-0" style="font-size:0.9vw">{{ item.laiks }}</p>
+                        {% endif %}
+                    </div>
+
+
+                    <div style="margin-left: 75%; position:absolute">
+                        <p></p>
+                        <p class="card-text mb-0" style="">
+                            {% if item.status is null %}
+                            <p style="color: #53c5ec; margin-left:50px;font-size:0.9vw">Reģistrēts</p>
+                            {% elif item.status == 0 %}
+                            <p style="color: #ff9233;margin-left:50px;font-size:0.9vw">Procesā</p>
+                            {% elif item.status == 1 %}
+                            <p style="color: green;margin-left:50px;font-size:0.9vw">Pabeigts</p>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+                <!-- Кнопки справа -->
+
+                <div class="btn-group" style="margin-right: 5%;width:1.5vw" id="drive_print">
+
+                    {% if item.paktip_ID.nosaukums == "Izbraukums pie klienta" %}
+                    <a href="{% url 'drive_print' pk=item.pak_ID %}" class="btn btn-primary btn-sm me-2" style="background-color:#FF6F61; border: 0.5px solid black">
+                        <i class="fa-solid fa-print" style="padding: 5px;"></i>
+                    </a>
+                    {% endif %}
+                    {% if item.status is None %}
+                    <button class="btn btn-primary start-btn" data-pakid="{{ item.pak_ID }}" style="background-color:#ee5253;border: 0.5px solid black">
+                        <i class="fa-solid fa-play" ></i></button>
+
+                    {% elif item.status is False %}
+
+                    <button class="btn btn-primary" onclick="location.href='{% url 'service_employee_detail' pk=item.pak_ID %}'" style="background-color:#ee5253;border: 0.5px solid black">
+                        <i class="fa-solid fa-flag-checkered" ></i></button>
+
+
+                    {% else %}
+                     <button class="btn btn-primary" onclick="location.href='{% url 'service_employee_detail' pk=item.pak_ID %}'" style="background-color:#ee5253;border: 0.5px solid black">
+                        <i class="fa-solid fa-eye"></i></button>
+                    {% endif %}
+                </div>
+
+
+            </div>
+        </div>
+        {% endfor %}
+        {% endfor %}
+    </div>
+    <!-- Модальное окно для подтверждения начала выполнения -->
+    <div class="modal fade" id="startConfirmationModal" tabindex="-1" role="dialog"
+         aria-labelledby="startConfirmationModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="startConfirmationModalLabel">Apstiprināt darbību</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Vai tiešām vēlaties uzsākt pakalpojumu?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Atcelt</button>
+                    <button type="button" class="btn btn-primary" id="confirmStartBtn" style="background-color:#ee5253; border: 0.5px solid black">Apstiprināt</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <input type="hidden" id="packageIdInput" value="">
+
+    <script>
+        // Обработчик события для кнопки "Uzsākt"
+        document.querySelectorAll('.start-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                // Получаем значение pak_ID из атрибута data-pakid
+                var pakID = this.getAttribute('data-pakid');
+                // Устанавливаем значение pak_ID в скрытом поле
+                document.getElementById('packageIdInput').value = pakID;
+                // Открываем модальное окно для подтверждения
+                var myModal = new bootstrap.Modal(document.getElementById('startConfirmationModal'));
+                myModal.show();
+            });
+        });
+
+        // Обработчик события для кнопки "Apstiprināt" в модальном окне
+        document.getElementById('confirmStartBtn').addEventListener('click', function() {
+            // Получаем значение pak_ID из скрытого поля
+            var pakID = document.getElementById('packageIdInput').value;
+            // Изменяем статус на 0 и перезагружаем страницу
+            changeStatus(pakID);
+        });
+
+        // Функция изменения статуса на 0
+        function changeStatus(pakID) {
+            var formData = new FormData();
+            formData.append('pak_ID', pakID);
+
+            fetch('/change_status/', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                if (data.success) {
+                    location.reload();
+                } else {
+                    console.error(data.error);
+                }
+            })
+            .catch(error => {
+                console.error(error);
+            });
+        }
+
+    </script>
+</div>
+
+<script>
+    document.getElementById("cards-container").addEventListener("scroll", function() {
+    var scrollToTopButton = document.getElementById("scrollToTopButton");
+    if (this.scrollTop > 20) {
+        scrollToTopButton.style.display = "block";
+    } else {
+        scrollToTopButton.style.display = "none";
+    }
+});
+
+function scrollToTop() {
+    var container = document.getElementById("cards-container");
+    var currentPosition = container.scrollTop;
+    if (currentPosition > 0) {
+        window.requestAnimationFrame(function() {
+            scrollToTop(container);
+        });
+        container.scrollTop = currentPosition - currentPosition / 8;
+    }
+}
+
+
+
+</script>
+{% endblock %}

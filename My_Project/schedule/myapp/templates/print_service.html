@@ -1,0 +1,196 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% block content %}
+<style>
+    @media print {
+        body {
+            margin: 0;
+            padding: 0;
+            size: A4 portrait;
+        }
+
+        .print-container {
+            width: 100%;
+            max-width: 100%;
+            margin: 0;
+        }
+
+        .btn {
+        display: none !important; /* Скрываем все кнопки с классом .btn */
+        }
+        .signature-field{
+        display: block !important;
+        }
+        }
+    /* Общие стили для таблиц */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th, td {
+        border: 1px solid #000;
+        padding: 8px;
+        text-align: left;
+    }
+
+    th {
+        background-color: #f2f2f2;
+    }
+
+    /* Дополнительные стили для таблиц */
+    .info-table {
+        margin-bottom: 20px;
+    }
+
+    .info-table th {
+        text-align: center;
+    }
+
+    .info-table td {
+        text-align: center;
+    }
+
+    .additional-info {
+        display: none;
+        text-align: center;
+        margin-top: 130px;
+    }
+
+    .signature-field {
+        display: none;
+        position: absolute;
+        bottom: 120px;
+        right: 20px;
+        font-size: 16px;
+        color: black;
+    }
+    #signature {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    font-size: 16px;
+    color: black;
+}
+
+/* Стили для поля подписи */
+#signature-field {
+    position: absolute;
+
+    top:800px;
+    right: -50px;
+    width: 200px;
+    height: 50px;
+
+}
+div.logo {
+  position: absolute;
+  top: -8%;
+  left: 50%;
+
+  height: 6.5vh;
+  transform: translateX(-50%);
+  }
+</style>
+
+<div class="logo" style="">
+    <img src="{% static 'logo_print__serviss_sia-removebg-preview.png' %}" alt="Logo">
+</div>
+<p style="position:absolute; top:120px;left:50%; transform: translateX(-50%);font-size:25px"><b>Pakalpojuma
+    informācija</b></p>
+<div style="margin-top: 170px;">
+    <!-- Таблица с информацией о пакалпоjуме -->
+    <table class="info-table">
+        <tr>
+            <th colspan="2">{{ pakalpojums.paktip_ID }}</th>
+        </tr>
+        <tr>
+            <td><b>Remonta numurs:</b></td>
+            <td>{{ pakalpojums.r_numurs }}</td>
+        </tr>
+        <tr>
+            <td><b>Datums:</b></td>
+            <td>{{ pakalpojums.pan_datums|date:"d/m/Y" }}</td>
+        </tr>
+        <tr>
+            <td colspan="2"><b>Klienta informācija</b></td>
+        </tr>
+        <tr>
+            <td><b>Pasutitājs:</b></td>
+            <td>{{ pakalpojums.klients }}</td>
+        </tr>
+        <tr>
+            <td><b>Talrunis:</b></td>
+            <td>{{ pakalpojums.k_talrunis }}</td>
+        </tr>
+        <tr>
+            <td colspan="2"><b>Pakalpojums</b></td>
+        </tr>
+        <tr>
+            <td><b>Ierice:</b></td>
+            <td>{{ pakalpojums.nosaukums }}</td>
+        </tr>
+        <tr>
+            <td><b>Serijas numurs:</b></td>
+            <td>{{ pakalpojums.serija_nr }}</td>
+        </tr>
+    </table>
+
+    <!-- Таблица с информацией о компании -->
+    <table class="info-table">
+        <tr>
+            <th colspan="2"><b>Uzņemuma informācija</b></th>
+        </tr>
+        <tr>
+            <td colspan="2"><b>Pieņema:</b> {{ request.session.login_vards }} {{ request.session.login_uzvards }}</td>
+        </tr>
+        <tr>
+            <td><b>Adrese:</b></td>
+            <td>Dārzu iela 28, Rēzekne</td>
+        </tr>
+        <tr>
+            <td><b>Tālrunis:</b></td>
+            <td>646-21187 / 26545972</td>
+        </tr>
+        <tr>
+            <td><b>Konts:</b></td>
+            <td>LV41503049293</td>
+        </tr>
+        <tr>
+            <td><b>E-pasts:</b></td>
+            <td>rezekne.serviss@gmail.com</td>
+        </tr>
+    </table>
+</div>
+
+<!-- Дополнительная информация -->
+<div class="additional-info">
+    <hr>
+    <p>Uzņemums "PRINT & SERVISS" nenes atbildību par klienta programmatūras nodrošinājumu uzinstalēto datorā, kurš
+        atrodas servisa apkalpošanā. Preces uzstādīšana, regulēšana, apkalpošana un tīrīšana - ir maksas
+        pakalpojums.</p>
+</div>
+
+<!-- Поле для подписи -->
+<div class="signature-field">Darbinieka paraksts<br><br>_____________________</div>
+
+<!-- Кнопки "Izdrukat" и "Iziet" -->
+<div class="btn-container" style="text-align: center; margin-top: 20px;">
+    <a href="{% url 'print_service' pk=pakalpojums.pk %}" class="btn btn-primary" onclick="printPage()"
+       style="background-color: #ff6f61; border: 1px solid black;">Izdrukat</a>
+    <a href="{% url 'service_base' %}" class="btn btn-secondary">Iziet</a>
+</div>
+
+<script>
+    function printPage() {
+        // Показываем дополнительную информацию перед печатью
+        var additionalInfo = document.querySelector('.additional-info');
+        if (additionalInfo) {
+            additionalInfo.style.display = 'block';
+        }
+        window.print();
+    }
+</script>
+
+{% endblock %}

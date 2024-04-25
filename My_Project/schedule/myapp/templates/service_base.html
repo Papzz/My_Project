@@ -1,0 +1,322 @@
+{% extends 'base.html' %}
+{% load static %}
+from .utils import get_latvian_month
+{% block content %}
+{% include 'navbar.html' %}
+<style>
+    body{
+    overflow: hidden; /* Hide scrollbars */
+    }
+
+    .section-link {
+        color: black;
+        padding: 10px;
+        margin: 5px;
+        border-radius: 5px;
+        text-decoration: none;
+        display: inline-block;
+        transition: background-color 0.3s;
+        border: 1px solid black;
+        border-radius: 50px;
+    }
+
+    .section-link.active {
+
+        font-weight: bold;
+        border: 1px solid black;
+        background-color: #ee5253;
+        box-shadow: 1px 1.5px;
+    }
+
+    .card {
+        margin-bottom: 20px;
+        position: relative;
+        border: solid light gray 0.5px;
+        border-radius: 5px;
+
+    }
+
+    .delete-button {
+        position: absolute;
+        top: 0px;
+        right: 8px;
+    }
+
+    .btn-group {
+        position: absolute;
+        right: 5px;
+        display: flex;
+        gap: 0 px;
+        width:10vh;
+
+    }
+
+    .section-link:hover {
+        background-color: #ee5253;
+        color: white;
+        box-shadow: 1px 1px solid black;
+    }
+
+    .btn-group .btn {
+        flex: 1;
+        max-width: 100px;
+        margin-left: -10px;
+    }
+
+    body {
+        background-color: #f5f5f5;
+    }
+
+    .container {
+        margin-left: 5%;
+        max-width: 1200px;
+        width: 100%;
+    }
+    .h6{
+    font-size:0.9vw;
+    }
+
+    #scrollToTopButton {
+    display: none; /* Скрыть кнопку по умолчанию */
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    background-color: #333;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 24px;
+    line-height: 30px;
+    text-align: center;
+    z-index: 9999; /* Поднимаем кнопку наверх поверх других элементов */
+    background-color: #ff6f61;
+    border: 0.5px solid black;
+}
+
+#cards-container {
+    max-height: 80vh;
+    overflow-y: auto;
+    margin-top: 20px;
+
+    scrollbar-color: #555 #f5f5f5;
+    padding-bottom: 120px;
+
+}
+
+
+#cards-container::-webkit-scrollbar {
+    width: 3px;
+    height: 3px;
+
+}
+
+/* Стилизуем трек скроллбара */
+#cards-container::-webkit-scrollbar-track {
+    background: #f5f5f5;
+
+}
+
+/* Стилизуем видимую часть полосы прокрутки */
+#cards-container::-webkit-scrollbar-thumb {
+    background-color: #555;
+    border-radius: 10px;
+    border: 2px solid #f5f5f5;
+
+
+}
+
+
+</style>
+
+    <h1 class="mb-4" style="margin-left:6.2%; font-size:1.8vw">Reģistrēto pakalpojumu uzskaite</h1>
+    <div class="container mt-5" style="">
+                <a href="{% url 'service' %}" class="btn btn-primary" style="position :absolute; left:12vh;margin-top: 1vh;width: 25vh;height: 3.7vh;font-size:0.8vw;background-color:#FF6F61;border: 1px solid black;color :black; border-radius: 5px;box-shadow: 1px 1.5px;"><i class="fas fa-plus" style="color:light-blue"></i>Reģistrēt jaunu ierakstu</a>
+        <div style="margin-left: 50%">
+        <a href="{% url 'service_base_status' status='visi' %}"
+           class="section-link {% if status == 'visi' %}active{% endif %}" id="visi">Visi</a>
+        <a href="{% url 'service_base_status' status='drizuma' %}"
+           class="section-link {% if status == 'drizuma' %}active{% endif %}">Ieplanoti</a>
+        <a href="{% url 'service_base_status' status='procesa' %}"
+           class="section-link {% if status == 'procesa' %}active{% endif %}">Procesa</a>
+        <a href="{% url 'service_base_status' status='nokaveti' %}"
+           class="section-link {% if status == 'nokaveti' %}active{% endif %}" >Nokavēti</a>
+        <a href="{% url 'service_base_status' status='pabeigti' %}"
+           class="section-link {% if status == 'pabeigti' %}active{% endif %}">Pabeigti</a>
+
+        </div>
+            <div class="col-md-4" >
+            <form action="{% url 'service_base_status' status=status %}" method="GET">
+
+                <div class="input-group" style="position:absolute; left:146.4vh; margin-top:-5vh; width:13%">
+                    <input type="text" class="form-control" id="searchInput" placeholder="Remonta numurs" name="search_query" value="{{ request.GET.search_query }}" style="border-radius:15px;font-size:.9vw;width:2vw;height:4vh">
+                    {% if request.GET.search_query %}
+                <a href="{% url 'service_base_status' status='visi' %}" class="btn btn-outline-secondary" style="background-color:#dc3545; color: black; border-radius:5px;">
+                    <i class="fas fa-times"></i>
+                </a>
+                    {% else %}
+                    <button class="btn btn-outline-secondary" type="submit" style="background-color:#ff6f61; color: black; border-radius:5px; margin-left:5px;width:2vw;height:4vh ;background-color:#dc3545; border: 0.5px solid black;box-shadow: 1.5px 1.5px;"><i class="fa-solid fa-magnifying-glass" style="position:center;font-size: 1.5vh;margin-left:-.1vh;"></i></button>
+                    {% endif %}
+                </div>
+            </form>
+            </div>
+        </div>
+
+
+
+        {% regroup all|dictsortreversed:"datums" by datums|date:"M.d (Y)" as grouped_items %}
+        {% if not vards_displayed %}
+        {% with vards_displayed=True %}
+
+        {% endwith %}
+        {% endif %}
+        <div id="cards-container" style="margin-left: 5%; max-height: 80vh; overflow-y: auto;">
+        {% for date_group in grouped_items %}
+        <p style="margin-left: 2%; margin-top: 5px;font-size: 2.3vh">{{ date_group.grouper }}</p>
+        {% for item in date_group.list %}
+        {% if forloop.parentloop.first and forloop.first %}
+
+
+        <button onclick="scrollToTop()" id="scrollToTopButton" title="Наверх">&#9650;</button>
+
+
+        {% endif %}
+
+            <div class="card" style="margin-left: 4vh;width: 160vh">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center">
+                        <div>
+                            {% if item.nosaukums|length > 30 %}
+
+                                <h6 style="text-decoration: none; color: black; font-size:0.9vw"><b>{{ item.nosaukums|slice:":30" }}-</b></h6>
+
+                                <h6 style="text-decoration: none; color: black; font-size:0.9vw;"><b>{{ item.nosaukums|slice:"30:" }}</b></h6>
+                            {% else %}
+                                <h6  class="card-title mb-0" style="text-decoration: none; color: black; font-size:0.9vw;"><b>{{ item.nosaukums }}</b></h6>
+                            {% endif %}
+                            <p class="card-text mb-0" style="font-size:0.9vw">Numurs: {{ item.r_numurs }}</p>
+                        </div>
+
+                        <div style="margin-left: 23%; position:absolute;font-size:0.9vw">
+                            <h6 class="card-title mb-0" style="font-size:0.9vw"><b>{{ item.klients }}</b></h6>
+                            <p class="card-text mb-0" style="font-size:0.9vw">{{ item.k_talrunis }}</p>
+                        </div>
+
+                        <div style="margin-left: 38%; position:absolute">
+                            <h6 class="card-title mb-0" style="font-size:0.9vw" ><b>{{ item.darb_ID }}</b></h6>
+                            <p class="card-text mb-0" style="font-size:0.9vw">{{ item.paktip_ID }}</p>
+                        </div>
+
+                        <div style="margin-left: 60%; position:absolute">
+
+                           {% if not item.vieta %}
+
+                            <p></p>
+                            <p><b>Dārzu iela 28</b></p>
+                            <p></p>
+                            {% else %}
+                            <h6 class="card-title mb-0" style="font-size:0.9vw"><b>{{ item.vieta }}</b></h6>
+                            <p class="card-text mb-0" style="font-size:0.9vw">{{ item.laiks }}</p>
+                            {% endif %}
+                        </div>
+
+
+                        <div style="margin-left: 75%; position:absolute">
+                            <p></p>
+                            <p class="card-text mb-0">
+                                {% if item.status is null %}
+                                <p style="color: #53c5ec; margin-left:50px;font-size:0.9vw">Reģistrēts</p>
+                                {% elif item.status == 0 %}
+                                <p style="color: #ff9233;margin-left:50px;font-size:0.9vw">Procesā</p>
+                                {% elif item.status == 1 %}
+                                <p style="color: green;margin-left:50px;font-size:0.9vw">Pabeigts</p>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                    <!-- Кнопки справа -->
+                    <div class="btn-group" style="position:absolute;left:146vh;width:1.5vw">
+                        <!-- Заменяем кнопку Izdrukat на иконку печати -->
+                        <a href="{% url 'print_service' pk=item.pak_ID %}" class="btn btn-primary btn-sm me-2" style="background-color:#FF6F61;border: 0.5px solid black;" >
+                            <i class="fa-solid fa-print" style=""></i>
+                        </a>
+                        {% if not item.status %}
+                        <a href="{% url 'service_detail' pk=item.pak_ID %}" class="btn btn-primary btn-sm me-2" style="background-color:#ee5253;border: 0.5px solid black;">
+                             <i class="fa-solid fa-pen-to-square" ></i>
+                        </a>
+                        <!-- Заменяем кнопку Dzest на иконку удаления -->
+                        <button class="btn btn-danger btn-sm delete-button" data-bs-toggle="modal"
+                                data-bs-target="#deleteConfirmation{{ item.pak_ID }}" style="border: 0.5px solid black;margin-left:0.8vh">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                        {% else %}
+                        <button class="btn btn-danger btn-sm delete-button" onclick="location.href='{% url 'service_employee_detail' pk=item.pak_ID %}'" style="background-color:#ee5253;border: 0.5px solid black; margin-left:0.8vh">
+                        <i class="fa-solid fa-eye"></i></button>
+                        {% endif %}
+                    </div>
+                    <div class="modal fade" id="deleteConfirmation{{ item.pak_ID }}" tabindex="-1" role="dialog"
+                         aria-labelledby="deleteConfirmationLabel{{ item.pak_ID }}" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="deleteConfirmationLabel{{ item.pak_ID }}">Dzēšanas
+                                        apstiprinājums</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Aizvērt"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p>Vai tiešām vēlaties dzēst pakalpojumu:</p>
+                                    <p>{{ item.nosaukums }} - {{ item.klients }}?</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Atcelt</button>
+                                    <form method="POST" action="{% url 'service_delete' pk=item.pak_ID %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-danger" style="background-color:#EC4138">Dzēst</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        {% endfor %}
+        {% endfor %}
+
+
+<script>
+    const today = new Date('{{ today|date:"Y-m-d" }}');
+    const startOfWeek = new Date('{{ start_of_week|date:"Y-m-d" }}');
+    const endOfWeek = new Date('{{ end_of_week|date:"Y-m-d" }}');
+    const startOfMonth = new Date('{{ start_of_month|date:"Y-m-d" }}');
+    const endOfMonth = new Date('{{ end_of_month|date:"Y-m-d" }}');
+    const monthLabel = document.getElementById('month-label');
+    const weekLabel = document.getElementById('week-label');
+    const todayLabel = document.getElementById('today-label');
+
+    document.getElementById("cards-container").addEventListener("scroll", function() {
+    var scrollToTopButton = document.getElementById("scrollToTopButton");
+    if (this.scrollTop > 20) {
+        scrollToTopButton.style.display = "block";
+    } else {
+        scrollToTopButton.style.display = "none";
+    }
+});
+
+function scrollToTop() {
+    var container = document.getElementById("cards-container");
+    var currentPosition = container.scrollTop;
+    if (currentPosition > 0) {
+        window.requestAnimationFrame(function() {
+            scrollToTop(container);
+        });
+        container.scrollTop = currentPosition - currentPosition / 8;
+    }
+}
+</script>
+
+{% endblock %}

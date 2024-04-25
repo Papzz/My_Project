@@ -1,0 +1,306 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% include 'navbar.html' %}
+<h1 style="margin-left:6.3%"> Pakalpojuma reģistrēšana</h1>
+<br/>
+<form method="POST" action="{% url 'service' %}">
+
+    {% csrf_token %}
+
+    <div style="padding: 3%; margin-left: 3.2%; margin-right: 5%">
+        <div class="mb-3 row">
+            <div class="col-md-4" id="NosaukumaField">
+                <label for="InputNosaukums" class="form-label"><b>Ierices nosaukums</b></label>
+                <input type="text" class="form-control" id="InputNosaukums"
+                       placeholder="Piemērs: Pakalpojuma nosaukums" name="nosaukums" value="{{ nosaukums }}"
+                       maxlength="50"
+                       required>
+            </div>
+
+
+            <div class="col-md-4" id="pakalpojumaTipsField">
+                <label for="InputPaktip" class="form-label"><b>Pakalpokjuma tips</b></label>
+                <select class="form-select" id="InputPaktip" name="paktip_ID">
+                    {% for paktip in paktip %}
+                    <option value="{{ paktip.paktip_ID }}">{{ paktip.nosaukums }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4" id="serijasNumursField">
+                <label for="InputSerNr" class="form-label"><b>Serijas numurs</b></label>
+                <input type="text" class="form-control" id="InputSerNr"
+                       placeholder="Ievadiet serijas numuru" name="serija_nr" value="{{ serija_nr }}" maxlength="30">
+            </div>
+            <script>
+                $(document).ready(function() {
+                    $('#InputPaktip').change(function() {
+                        var selectedPaktip = $(this).val();
+                        if (selectedPaktip === 'Izbraukums pie klienta') {
+                            $('#InputSerNr').parent().hide(); // Скрываем поле Serijas numurs
+                        } else {
+                            $('#InputSerNr').parent().show(); // Отображаем поле Serijas numurs
+                        }
+                    });
+                    $('#InputPaktip').change(); // Вызываем событие change() сразу после загрузки страницы
+                });
+            </script>
+
+        </div>
+
+        <div class="mb-3 row">
+            <div class="col-md-4" id="klientsField">
+                <label for="InputKlients" class="form-label"><b>Klients</b></label>
+                <input type="text" class="form-control" id="InputKlients"
+                       placeholder="Piemērs: Klienta vārds" name="klients" value="{{ klients }}" maxlength="50"
+                       required>
+            </div>
+
+            <div class="col-md-4" id="klientaTalrunisField">
+                <label for="InputKTalrunis" class="form-label"><b>Klienta talrunis</b></label>
+                <input type="text" pattern="\d*" class="form-control" id="InputKTalrunis"
+                       placeholder="Piemērs: 22222222" name="k_talrunis"
+                       oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);
+                            if (this.value.length === 1 && this.value[0] === '0') this.value = '';
+                            this.value = this.value.replace(/[^0-9]/g, '');"
+                       value="{{ k_talrunis }}" maxlength="8" required>
+            </div>
+
+            <div class="col-md-4" id="klientaEpastsField">
+                <label for="InputKEpasts" class="form-label"><b>Klienta e-pasts</b></label>
+                <input type="email" class="form-control" id="InputKEpasts"
+                       placeholder="Piemērs: klienta@example.com" name="k_epasts" value="{{ k_epasts }}" maxlength="50">
+            </div>
+        </div>
+
+
+        <div class="mb-3 row">
+            <div class="col-md-4" id="datumsField">
+                <label for="InputDatums" class="form-label"><b>Datums</b></label>
+                <input type="date" class="form-control" id="InputDatums"
+                       placeholder="Ievadiet pakalpojuma datumu" name="datums" value="{{ datums }}" min="{{ today }} "
+                       required>
+                <script>
+                    // Получаем текущую дату
+                    var today = new Date();
+
+                    // Форматируем текущую дату в формате YYYY-MM-DD (требуемый для атрибута min)
+                    var yyyy = today.getFullYear();
+                    var mm = String(today.getMonth() + 1).padStart(2, '0'); // добавляем ноль в начало, если месяц < 10
+                    var dd = String(today.getDate()).padStart(2, '0'); // добавляем ноль в начало, если день < 10
+                    var minDate = yyyy + '-' + mm + '-' + dd;
+
+                    // Устанавливаем атрибут min для соответствующего input
+                    document.getElementById("InputDatums").setAttribute("min", minDate);
+                </script>
+            </div>
+
+            <div class="col-md-4" id="darbinieksNumursField">
+                <label for="InputDarbinieks" class="form-label"><b>Darbinieks</b></label>
+                <select class="form-select" id="InputDarbinieks" name="darb_ID">
+                    {% for darbinieks in darbinieki %}
+                    <option value="{{ darbinieks.darb_ID }}">{{ darbinieks.vards }} {{ darbinieks.uzvards }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+        </div>
+        <div class="mb-3 row">
+            <div class="col-md-4" id="vietaField">
+                <label for="InputVieta" class="form-label"><b>Pakalpojuma sniegšanas adrese</b></label>
+                <input type="text" class="form-control" id="InputVieta"
+                       placeholder="Piemērs: Pakalpojuma vieta" name="vieta" value="{{ vieta }}" maxlength="40">
+            </div>
+
+            <div class="col-md-4" id="laiksField">
+                <label for="InputLaiks" class="form-label"><b>Laiks</b></label>
+                <input type="time" class="form-control" id="InputLaiks" name="laiks" value="{{ laiks }}">
+            </div>
+        </div>
+
+
+        <div class="mb-3" id="komplektacijaField">
+            <label for="InputSitAprakts" class="form-label"><b>Saņemta komplektācija</b></label>
+            <textarea class="form-control" id="" rows="2" cols="50" name="komplektacija" maxlength="300"
+                      placeholder="Ievadiet saņemtu komplektāciju">{{ komplektacija }}</textarea>
+        </div>
+
+        <div class="mb-3" id="sitAprakstsField">
+            <label for="InputSitAprakts" class="form-label"><b>Bojājumu apraksts</b></label>
+            <textarea class="form-control" id="InputSitAprakts" rows="2" cols="500" name="sit_aprakts" maxlength="300"
+                      placeholder="Piemērs: Sīkāks apraksts par pakalpojumu" required>{{ sit_aprakts }}</textarea>
+        </div>
+
+
+        <br/>
+        <button type="submit" class="btn btn-primary" style="background-color:#EC4138; border: 1px solid black">
+            Reģistrēt
+        </button>
+        <a href="{% url 'service_base' %}" class="btn btn-secondary">Atcelt</a>
+    </div>
+</form>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+
+<script>
+    $(document).ready(function() {
+
+     $('#InputPaktip').change(function() {
+    console.log("Dropdown value changed to: ", $(this).val());
+    console.log("Serijas numurs field:", $('#serijasNumursField'));
+         var selectedPaktip = $(this).val();
+         if(selectedPaktip == 1) {
+
+             $('#serijasNumursField').css('display', 'block');
+             $('#komplektacijaField').css('display', 'block');// To show the field
+             $('#laiksField').hide();
+             $('#vietaField').hide();
+            // Делаем AJAX-запрос для получения отфильтрованных darbinieki
+            $.ajax({
+    url: 'get_darbinieki', // URL для вашего представления
+    data: {
+        selected_paktip_id: selectedPaktip // Используйте selected_paktip_id вместо paktip_ID
+    },
+    dataType: 'json',
+    success: function(response) {
+        var darbinieki = response.darbinieki;
+
+        // Очищаем предыдущие опции
+        $('#InputDarbinieks').empty();
+
+        // Заполняем элемент select новыми опциями
+        $.each(darbinieki, function(index, darbinieks) {
+            $('#InputDarbinieks').append('<option value="' + darbinieks.darb_ID + '">' + darbinieks.vards + ' ' + darbinieks.uzvards + '</option>');
+        });
+    },
+    error: function(xhr, status, error) {
+        console.error(error);
+    }
+});
+            }
+         else if(selectedPaktip == 2 ){
+             $('#serijasNumursField').css('display', 'block');
+             $('#komplektacijaField').css('display', 'block');// To show the field
+             $('#laiksField').hide();
+             $('#vietaField').hide();
+             $.ajax({
+    url: 'get_darbinieki', // URL для вашего представления
+    data: {
+        selected_paktip_id: selectedPaktip // Используйте selected_paktip_id вместо paktip_ID
+    },
+    dataType: 'json',
+    success: function(response) {
+        var darbinieki = response.darbinieki;
+
+        // Очищаем предыдущие опции
+        $('#InputDarbinieks').empty();
+
+        // Заполняем элемент select новыми опциями
+        $.each(darbinieki, function(index, darbinieks) {
+            $('#InputDarbinieks').append('<option value="' + darbinieks.darb_ID + '">' + darbinieks.vards + ' ' + darbinieks.uzvards + '</option>');
+        });
+    },
+    error: function(xhr, status, error) {
+        console.error(error);
+    }
+});
+         }
+         else if(selectedPaktip == 3 ){
+             $('#serijasNumursField').css('display', 'block');
+             $('#komplektacijaField').css('display', 'block');// To show the field
+             $('#laiksField').hide();
+             $('#vietaField').hide();
+             $.ajax({
+    url: 'get_darbinieki', // URL для вашего представления
+    data: {
+        selected_paktip_id: selectedPaktip // Используйте selected_paktip_id вместо paktip_ID
+    },
+    dataType: 'json',
+    success: function(response) {
+        var darbinieki = response.darbinieki;
+
+        // Очищаем предыдущие опции
+        $('#InputDarbinieks').empty();
+
+        // Заполняем элемент select новыми опциями
+        $.each(darbinieki, function(index, darbinieks) {
+            $('#InputDarbinieks').append('<option value="' + darbinieks.darb_ID + '">' + darbinieks.vards + ' ' + darbinieks.uzvards + '</option>');
+        });
+    },
+    error: function(xhr, status, error) {
+        console.error(error);
+    }
+});
+         }
+
+         else if(selectedPaktip == 5 ){
+             $('#serijasNumursField').css('display', 'block');
+             $('#komplektacijaField').css('display', 'block');// To show the field
+             $('#laiksField').hide();
+             $('#vietaField').hide();
+             $.ajax({
+    url: 'get_darbinieki', // URL для вашего представления
+    data: {
+        selected_paktip_id: selectedPaktip // Используйте selected_paktip_id вместо paktip_ID
+    },
+    dataType: 'json',
+    success: function(response) {
+        var darbinieki = response.darbinieki;
+
+        // Очищаем предыдущие опции
+        $('#InputDarbinieks').empty();
+
+        // Заполняем элемент select новыми опциями
+        $.each(darbinieki, function(index, darbinieks) {
+            $('#InputDarbinieks').append('<option value="' + darbinieks.darb_ID + '">' + darbinieks.vards + ' ' + darbinieks.uzvards + '</option>');
+        });
+    },
+    error: function(xhr, status, error) {
+        console.error(error);
+    }
+});
+         }
+         else if (selectedPaktip == 4) {
+             $('#serijasNumursField').hide();
+             $('#komplektacijaField').hide();
+             $('#laiksField').show();
+             $('#vietaField').show();
+             $.ajax({
+    url: 'get_darbinieki', // URL для вашего представления
+    data: {
+        selected_paktip_id: selectedPaktip // Используйте selected_paktip_id вместо paktip_ID
+    },
+    dataType: 'json',
+    success: function(response) {
+        var darbinieki = response.darbinieki;
+
+        // Очищаем предыдущие опции
+        $('#InputDarbinieks').empty();
+
+        // Заполняем элемент select новыми опциями
+        $.each(darbinieki, function(index, darbinieks) {
+            $('#InputDarbinieks').append('<option value="' + darbinieks.darb_ID + '">' + darbinieks.vards + ' ' + darbinieks.uzvards + '</option>');
+        });
+    },
+    error: function(xhr, status, error) {
+        console.error(error);
+    }
+});
+
+         }
+     });
+
+     // Trigger change event on page load to initially hide/show the field based on the default selected value
+     $('#InputPaktip').change();
+ });
+
+      $(document).ready(function() {
+         // Обработчик отправки формы
+         $('form').submit(function(event) {
+             // Находим все обязательные поля и удаляем у них атрибут required перед отправкой формы
+             $(this).find('[required]').removeAttr('required');
+         });
+     });
+</script>
+
+{% endblock %}

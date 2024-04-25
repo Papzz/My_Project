@@ -1,0 +1,37 @@
+{
+    "Amats": [
+        {
+            "model": "myapp.amats",
+            "pk": 3,
+            "fields": {
+                "nosaukums": "darbinieks3"
+            }
+        },
+        {
+            "model": "myapp.amats",
+            "pk": 4,
+            "fields": {
+                "nosaukums": "darbinieks1"
+            }
+        },
+        {
+            "model": "myapp.amats",
+            "pk": 5,
+            "fields": {
+                "nosaukums": "darbinieks2"
+            }
+        }
+    ],
+    "Darbinieki": [
+        {
+            "model": "myapp.darbinieki",
+            "pk": 1,
+            "fields": {
+                "amata_ID": 4,
+                "vards": "Oskars",
+                "uzvards": "Loguncov",
+                "personas_kods": "310304-22222",
+                "talrunis": "25414271",
+                "dz_datums": "2004-03-31",
+                "uzsak_datums": "2024-02-09",
+                "prasmes": 
