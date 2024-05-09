@@ -64,13 +64,15 @@ def service_base(request, status='visi'):
     return render(request, "service_base.html", context)
 
 
-def service_employee(request, status='visi'):
-    if not request.session.get('darb_ID'):
+def service_employee(request, status='visi'):  # filtrēt pakalpojumus, caur darbinieka kontu
+    if not request.session.get('darb_ID'):  # parbauda vai sesija ir aktīva
         return redirect('login')
     user = request.user
-    darb_ID = request.session.get('darb_ID')
+    darb_ID = request.session.get('darb_ID')  # no sessijas tiek paņemt darbinieka ID
 
+    # filtrēt pakalpojumus, kur noradīts tekošais darbinieks
     employee_all_service = Pakalpojums.objects.filter(darb_ID=darb_ID)
+    # statusa variacijas izpildes metodes
     if status == 'visi':
         employee_all_service = employee_all_service.exclude(status=1)
     elif status == 'uzsaktie':
@@ -81,12 +83,13 @@ def service_employee(request, status='visi'):
         employee_all_service = employee_all_service.filter(datums__lte=date.today(), status=None)
     elif status == 'pabeigti':
         employee_all_service = employee_all_service.filter(status=1)
-    search_query = request.GET.get('search_query')
+    search_query = request.GET.get('search_query')  # pakalpojuma mēklešana izmantojot remonta numuru
     if search_query:
-        employee_all_service = employee_all_service.filter(r_numurs__icontains=search_query)
+        employee_all_service = employee_all_service.filter(
+            r_numurs__icontains=search_query)  # remonta numura parbaide un attēlošana
 
     context = {'employee_services': employee_all_service, 'status': status}
-    return render(request, "service_employee.html", context)
+    return render(request, "service_employee.html", context)  # izmantojama filtra lapa
 
 
 def user_service(request):
@@ -195,23 +198,21 @@ def employee(request):
     })
 
 
-def service(request):
-    if not request.session.get('darb_ID'):
+def service(request):  # reģistrēt jaunu pakalpojumu
+    if not request.session.get('darb_ID'):  # parbauda vai sesija ir aktīva, ja nē, tad attelojas ielogošanas forma
         return redirect('login')
-    darbinieki = Darbinieki.objects.filter(menedzeris=False)
-    pak_tipi = PakTip.objects.all()
-    selected_paktip_id = request.POST.get('paktip_ID')
-
-    vards_displayed = False
+    darbinieki = Darbinieki.objects.filter(menedzeris=False)  # attēlot tos darbiniekus, kuri nav menedžeri
+    pak_tipi = PakTip.objects.all()  # paņemt visus pakalpojuma tipus
+    selected_paktip_id = request.POST.get('paktip_ID')  # saglabāt izvēleto pakalpojuma tipu
     if request.method == "POST":
         form = ServiceForm(request.POST or None)
 
         if form.is_valid():
-            form.instance.pan_datums = date.today()
+            form.instance.pan_datums = date.today()  # saglabāt izveides datumu
             form.save()
             messages.success(request, ('Jauns pakalpojums tiek saglabāts!'))
             return redirect('service_base')
-        else:
+        else:  # saglabat laukos tos vērtībus kuri biji pieškirti pirms kļūdas
             nosaukums = request.POST['nosaukums']
             klients = request.POST['klients']
             k_talrunis = request.POST['k_talrunis']
@@ -226,7 +227,7 @@ def service(request):
             komplektacija = request.POST['komplektacija']
 
             messages.success(request, (" Parbaudiet pierakstītas vērtības!"))
-            return render(request, "service.html", {
+            return render(request, "service.html", {  # attelot saglabatos datus atbilstošajoss laukos
                 'form': form,
                 'darbinieki': darbinieki,
                 'pak_tipi': pak_tipi,
@@ -239,50 +240,36 @@ def service(request):
                 'vieta': vieta,
                 'sit_aprakts': sit_aprakts,
                 'darb_ID': darb_ID,
-
                 'serija_nr': serija_nr,
                 'komplektacija': komplektacija,
 
             })
-
     else:
         form = ServiceForm()
-
     return render(request, "service.html", {'form': form, 'darbinieki': darbinieki, 'paktip': pak_tipi})
 
 
-def izbraukums(request):
+def izbraukums(request, pk):
     if not request.session.get('darb_ID'):
         return redirect('login')
 
+    pakalpojums = get_object_or_404(Pakalpojums, pak_ID=pk)
+
     if request.method == "POST":
-        form = IzbraukumsForm(request.POST or None)
+        form = IzbraukumsForm(request.POST, instance=pakalpojums)  # Передаем экземпляр объекта пакалпоюмс в форму
         if form.is_valid():
-            # Сохраняем данные только при валидной форме
             instance = form.save(commit=False)
-            instance.status = True  # Устанавливаем значение статуса
-            instance.datums = datetime.now()  # Устанавливаем значение даты
+            instance.status = True
+            instance.datums = timezone.now()
             instance.save()
-            messages.success(request, 'Jauns pakalpojums tiek saglabāts!')
+            messages.success(request, 'Pakalpojuma dati tiek saglabāti!')
             return redirect('service_employee')
         else:
-            auto = request.POST['auto']
-            nobraukums = request.POST['nobraukums']
-            p_laiks = request.POST['p_laiks']
-            darb_apraksts = request.POST['darb_apraksts']
-
-            messages.success(request, (" Parbaudiet pierakstītas vērtības!"))
-            return render(request, "service_employee_detail.html", {
-                'form': form,
-                'auto': auto,
-                'nobraukums': nobraukums,
-                'p_laiks': p_laiks,
-                'darb_apraksts': darb_apraksts,
-
-            })
+            messages.error(request, 'Formātā esoši dati nav derīgi!')
+            return redirect('service_employee')
 
     else:
-        form = IzbraukumsForm()
+        form = IzbraukumsForm(instance=pakalpojums)  # Передаем экземпляр объекта пакалпоюмс в форму
 
     return render(request, "service_employee.html", {'form': form})
 
@@ -447,7 +434,7 @@ def login_view(request):
                 except Exception as e:
                     return JsonResponse({'error': f'Error setting session data: {str(e)}'})
             else:
-                messages.error(request, 'Nepareizs login vai parole')
+                messages.error(request, 'Nepareizs lietotāja vārds vai parole')
     else:
         form = LoginForm()
 
@@ -558,7 +545,8 @@ def save_darb_apraksts(request, pk):
             # Сохраняем darb_apraksts и текущую дату в PakInfo
             pak_info = PakInfo.objects.create(pak_ID=pakalpojums, darb_apraksts=darb_apraksts_value,
                                               datums=date.today())
-
+            PakInfo.objects.filter(pak_ID=pakalpojums).update(status=1)
+            form.instance.darb_apraksts = darb_apraksts_value
             # Возвращаем JSON-ответ об успешном сохранении
             return JsonResponse({'success': True})
         else:
@@ -609,22 +597,23 @@ def change_status(request):
 User = get_user_model()
 
 
-def change_password(request):
-    if not request.session.get('darb_ID'):
+def change_password(request):  # nomainīt konta paroli
+    if not request.session.get(
+            'darb_ID'):  # izmantojot sesiju, parbauda vai tā ir aktīva, ja nē, tad atvēras ielogošanas forma
         return redirect('login')
     if request.method == 'POST':
-        darb_ID = request.session.get('darb_ID')
+        darb_ID = request.session.get('darb_ID')  # no sesijas tiek paņemts pierlegra darbinieka ID
         if darb_ID:
-            old_password = request.POST.get('old_password')
-            new_password = request.POST.get('new_password')
-            confirm_new_password = request.POST.get('confirm_new_password')
+            old_password = request.POST.get('old_password')  # vērtība no lauka 'old_password'
+            new_password = request.POST.get('new_password')  # vērtība no lauka 'new_password'
+            confirm_new_password = request.POST.get('confirm_new_password')  # vērtība no lauka 'confirm_new_password'
 
-            user = Darbinieki.objects.get(darb_ID=darb_ID)
+            user = Darbinieki.objects.get(darb_ID=darb_ID)  # no darbinieka tabulas tiek paņemts tekošais lietotājs
 
-            if check_password(old_password, user.parole):
-                if new_password != confirm_new_password:
+            if check_password(old_password, user.parole):  # ja veca parole sakrit ar ievadīto
+                if new_password != confirm_new_password:  # ja jauni paroles nesakrit
                     messages.success(request, 'Paroles nesakrīt')
-                else:
+                else:  # ja jauni paroles sakrit, parole tiek nomainīta
                     user.parole = new_password
                     user.save()
                     messages.success(request, 'Parole veiksmīgi mainīta')
@@ -636,4 +625,4 @@ def change_password(request):
     else:
         messages.success(request, 'Netiek atbalstīta šāda pieprasījuma metode')
 
-    return redirect(request.META.get('HTTP_REFERER', 'default_url'))
+    return redirect(request.META.get('HTTP_REFERER', 'default_url'))  # lietotājs paliek uz tekošas lapas
