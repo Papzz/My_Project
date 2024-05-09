@@ -135,7 +135,7 @@
     <h1 class="mb-4" style="font-size:1.8vw;margin-left:6%">Reģistrēto pakalpojumu saraksts</h1>
     <div style="margin-left: 50%;transform: translateX(-30%);">
     <a href="{% url 'service_employee_status' status='visi' %}"
-       class="section-link {% if status == 'visi' %}active{% endif %}">Visi</a>
+       class="section-link {% if status == 'visi' %}active{% endif %}">Aktualās</a>
     <a href="{% url 'service_employee_status' status='drizuma' %}"
        class="section-link {% if status == 'drizuma' %}active{% endif %}">Ieplanoti</a>
     <a href="{% url 'service_employee_status' status='uzsaktie' %}"
@@ -229,9 +229,9 @@
                 <div class="btn-group" style="margin-right: 5%;width:1.5vw" id="drive_print">
 
                     {% if item.paktip_ID.nosaukums == "Izbraukums pie klienta" %}
-                    <a href="{% url 'drive_print' pk=item.pak_ID %}" class="btn btn-primary btn-sm me-2" style="background-color:#FF6F61; border: 0.5px solid black">
-                        <i class="fa-solid fa-print" style="padding: 5px;"></i>
-                    </a>
+                    <button id="printButton{{ item.pak_ID }}" data-pk="{{ item.pak_ID }}" class="printButton btn btn-primary btn-sm me-2" style="background-color:#FF6F61;border: 0.5px solid black;">
+                            <i class="fa-solid fa-print"></i>
+                        </button>
                     {% endif %}
                     {% if item.status is None %}
                     <button class="btn btn-primary start-btn" data-pakid="{{ item.pak_ID }}" style="background-color:#ee5253;border: 0.5px solid black">
@@ -350,6 +350,78 @@ function scrollToTop() {
 }
 
 
-
+document.querySelectorAll('.print-btn').forEach(button => {
+    button.addEventListener('click', function() {
+        const pakID = this.getAttribute('data-pakid');
+        const printServiceURL = `/drive_print/${pakID}/`; // Путь к представлению печати
+        fetch(printServiceURL)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Ошибка при печати страницы');
+            }
+            return response.text();
+        })
+        .then(data => {
+            // Записываем содержимое для печати
+            document.body.innerHTML = data;
+            // Вызываем функцию печати
+            window.print();
+            // Восстанавливаем исходное содержимое страницы
+            location.reload(); // Перезагрузка страницы после печати
+        })
+        .catch(error => {
+            console.error('Ошибка:', error);
+            // Обработка ошибок, если необходимо
+        });
+    });
+});
+document.querySelectorAll('.printButton').forEach(button => {
+    button.addEventListener('click', function() {
+        const pakID = this.getAttribute('data-pk');
+        const printServiceURL = `/drive_print/${pakID}/`; // Путь к представлению печати
+        fetch(printServiceURL)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Ошибка при печати страницы');
+            }
+            return response.text();
+        })
+        .then(data => {
+            // Записываем содержимое для печати
+            document.body.innerHTML = data;
+            // Вызываем функцию печати
+            window.print();
+            // Восстанавливаем исходное содержимое страницы
+            location.reload(); // Перезагрузка страницы после печати
+        })
+        .catch(error => {
+            console.error('Ошибка:', error);
+            // Обработка ошибок, если необходимо
+        });
+    });
+});
+    document.getElementById('printButton').addEventListener('click', function() {
+        const pakID = this.getAttribute('data-pk');
+        const printServiceURL = `/drive_print/${pakID}/`; // Путь к представлению печати
+        fetch(printServiceURL)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Ошибка при печати страницы');
+            }
+            return response.text();
+        })
+        .then(data => {
+            // Записываем содержимое для печати
+            document.body.innerHTML = data;
+            // Вызываем функцию печати
+            window.print();
+            // Восстанавливаем исходное содержимое страницы
+            location.reload();
+        })
+        .catch(error => {
+            console.error('Ошибка:', error);
+            // Обработка ошибок, если необходимо
+        });
+    });
 </script>
 {% endblock %}
