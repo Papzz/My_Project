@@ -22,6 +22,9 @@
         .signature-field{
         display: block !important;
         }
+        .block{
+        display: block !important;
+        }
         }
     /* Общие стили для таблиц */
     table {
@@ -66,6 +69,10 @@
         font-size: 16px;
         color: black;
     }
+    .block
+    {
+        display: none;
+    }
     #signature {
     position: fixed;
     bottom: 20px;
@@ -97,81 +104,83 @@ div.logo {
 <div class="logo" style="">
     <img src="{% static 'logo_print__serviss_sia-removebg-preview.png' %}" alt="Logo">
 </div>
-<p style="position:absolute; top:120px;left:50%; transform: translateX(-50%);font-size:25px"><b>Pakalpojuma
-    informācija</b></p>
-<div style="margin-top: 170px;">
-    <!-- Таблица с информацией о пакалпоjуме -->
-    <table class="info-table">
-        <tr>
-            <th colspan="2">{{ pakalpojums.paktip_ID }}</th>
-        </tr>
-        <tr>
-            <td><b>Remonta numurs:</b></td>
-            <td>{{ pakalpojums.r_numurs }}</td>
-        </tr>
-        <tr>
-            <td><b>Datums:</b></td>
-            <td>{{ pakalpojums.pan_datums|date:"d/m/Y" }}</td>
-        </tr>
-        <tr>
-            <td colspan="2"><b>Klienta informācija</b></td>
-        </tr>
-        <tr>
-            <td><b>Pasutitājs:</b></td>
-            <td>{{ pakalpojums.klients }}</td>
-        </tr>
-        <tr>
-            <td><b>Talrunis:</b></td>
-            <td>{{ pakalpojums.k_talrunis }}</td>
-        </tr>
-        <tr>
-            <td colspan="2"><b>Pakalpojums</b></td>
-        </tr>
-        <tr>
-            <td><b>Ierice:</b></td>
-            <td>{{ pakalpojums.nosaukums }}</td>
-        </tr>
-        <tr>
-            <td><b>Serijas numurs:</b></td>
-            <td>{{ pakalpojums.serija_nr }}</td>
-        </tr>
-    </table>
+<div class="block">
+    <p style="position:absolute; top:120px;left:50%; transform: translateX(-50%);font-size:25px"><b>Pakalpojuma
+        informācija</b></p>
+    <div style="margin-top: 170px;">
+        <!-- Таблица с информацией о пакалпоjуме -->
+        <table class="info-table">
+            <tr>
+                <th colspan="2">{{ pakalpojums.paktip_ID }}</th>
+            </tr>
+            <tr>
+                <td><b>Remonta numurs:</b></td>
+                <td>{{ pakalpojums.r_numurs }}</td>
+            </tr>
+            <tr>
+                <td><b>Datums:</b></td>
+                <td>{{ pakalpojums.pan_datums|date:"d/m/Y" }}</td>
+            </tr>
+            <tr>
+                <td colspan="2"><b>Klienta informācija</b></td>
+            </tr>
+            <tr>
+                <td><b>Pasutitājs:</b></td>
+                <td>{{ pakalpojums.klients }}</td>
+            </tr>
+            <tr>
+                <td><b>Talrunis:</b></td>
+                <td>{{ pakalpojums.k_talrunis }}</td>
+            </tr>
+            <tr>
+                <td colspan="2"><b>Pakalpojums</b></td>
+            </tr>
+            <tr>
+                <td><b>Ierice:</b></td>
+                <td>{{ pakalpojums.nosaukums }}</td>
+            </tr>
+            <tr>
+                <td><b>Serijas numurs:</b></td>
+                <td>{{ pakalpojums.serija_nr }}</td>
+            </tr>
+        </table>
 
-    <!-- Таблица с информацией о компании -->
-    <table class="info-table">
-        <tr>
-            <th colspan="2"><b>Uzņemuma informācija</b></th>
-        </tr>
-        <tr>
-            <td colspan="2"><b>Pieņema:</b> {{ request.session.login_vards }} {{ request.session.login_uzvards }}</td>
-        </tr>
-        <tr>
-            <td><b>Adrese:</b></td>
-            <td>Dārzu iela 28, Rēzekne</td>
-        </tr>
-        <tr>
-            <td><b>Tālrunis:</b></td>
-            <td>646-21187 / 26545972</td>
-        </tr>
-        <tr>
-            <td><b>Konts:</b></td>
-            <td>LV41503049293</td>
-        </tr>
-        <tr>
-            <td><b>E-pasts:</b></td>
-            <td>rezekne.serviss@gmail.com</td>
-        </tr>
-    </table>
+        <!-- Таблица с информацией о компании -->
+        <table class="info-table">
+            <tr>
+                <th colspan="2"><b>Uzņemuma informācija</b></th>
+            </tr>
+            <tr>
+                <td colspan="2"><b>Pieņema:</b> {{ request.session.login_vards }} {{ request.session.login_uzvards }}
+                </td>
+            </tr>
+            <tr>
+                <td><b>Adrese:</b></td>
+                <td>Dārzu iela 28, Rēzekne</td>
+            </tr>
+            <tr>
+                <td><b>Tālrunis:</b></td>
+                <td>646-21187 / 26545972</td>
+            </tr>
+            <tr>
+                <td><b>Konts:</b></td>
+                <td>LV41503049293</td>
+            </tr>
+            <tr>
+                <td><b>E-pasts:</b></td>
+                <td>rezekne.serviss@gmail.com</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Дополнительная информация -->
+    <div class="additional-info">
+        <hr>
+        <p>Uzņemums "PRINT & SERVISS" nenes atbildību par klienta programmatūras nodrošinājumu uzinstalēto datorā, kurš
+            atrodas servisa apkalpošanā. Preces uzstādīšana, regulēšana, apkalpošana un tīrīšana - ir maksas
+            pakalpojums.</p>
+    </div>
 </div>
-
-<!-- Дополнительная информация -->
-<div class="additional-info">
-    <hr>
-    <p>Uzņemums "PRINT & SERVISS" nenes atbildību par klienta programmatūras nodrošinājumu uzinstalēto datorā, kurš
-        atrodas servisa apkalpošanā. Preces uzstādīšana, regulēšana, apkalpošana un tīrīšana - ir maksas
-        pakalpojums.</p>
-</div>
-
 <!-- Поле для подписи -->
 <div class="signature-field">Darbinieka paraksts<br><br>_____________________</div>
 
@@ -191,6 +200,37 @@ div.logo {
         }
         window.print();
     }
+        window.onload = function() {
+        printPage();
+    };
+
+     document.getElementById('printButton').addEventListener('click', function(event) {
+        event.preventDefault(); // Предотвращаем переход по ссылке
+
+        // Получаем URL страницы print service из атрибута href кнопки
+        var printServiceURL = this.getAttribute('href');
+
+        // Отправляем запрос на сервер для печати страницы print service
+        fetch(printServiceURL, {
+            method: 'GET'
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Ошибка при печати страницы');
+            }
+            // Если запрос успешно выполнен, отображаем дополнительную информацию перед печатью
+            var additionalInfo = document.querySelector('.additional-info');
+            if (additionalInfo) {
+                additionalInfo.style.display = 'block';
+            }
+            // Вызываем печать
+            window.print();
+        })
+        .catch(error => {
+            console.error('Ошибка:', error);
+            // Обработка ошибок, если необходимо
+        });
+    });
 </script>
 
 {% endblock %}
